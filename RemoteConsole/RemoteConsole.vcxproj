@@ -115,7 +115,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="client_networker.cpp" />
+    <ClCompile Include="server_networker.cpp" />
     <ClCompile Include="Source.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="base_networker.h" />
+    <ClInclude Include="client_networker.h" />
+    <ClInclude Include="error_list.h" />
+    <ClInclude Include="server_networker.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
