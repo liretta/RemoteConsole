@@ -12,7 +12,7 @@ class BaseNetworker
 {
 public:
 	BaseNetworker() {};
-	virtual ~BaseNetworker() = 0;
+	virtual ~BaseNetworker() {};
 	virtual Error init() = 0;
 	virtual bool send(std::string a_message)= 0;
 	virtual std::string receive() = 0;

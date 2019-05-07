@@ -29,7 +29,8 @@ bool ServerNetworker::init_library()
 */
 bool ServerNetworker::create_socket()
 {
-	bool result = true;
+	bool bResult = true;
+	int iResult = -1;
 	int sizeAddr = sizeof(m_addr);
 	m_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	m_addr.sin_port = htons(1111);
@@ -39,29 +40,29 @@ bool ServerNetworker::create_socket()
 	if (m_listenSocket == INVALID_SOCKET)
 	{
 		WSACleanup();
-		result = false;
-		return result;
+		bResult = false;
+		return bResult;
 	}
 
-	result = bind(m_listenSocket, (sockaddr*)&m_addr, sizeof(m_addr));
-	if (result == SOCKET_ERROR)
+	iResult = bind(m_listenSocket, (sockaddr*)&m_addr, sizeof(m_addr));
+	if (iResult == SOCKET_ERROR)
 	{
-		result = false;
+		bResult = false;
 		closesocket(m_listenSocket);
 		WSACleanup();
-		return result;
+		return bResult;
 	}
 
-	result = listen(m_listenSocket, SOMAXCONN);
-	if (result == SOCKET_ERROR)
+	iResult = listen(m_listenSocket, SOMAXCONN);
+	if (iResult == SOCKET_ERROR)
 	{
-		result = false;
+		bResult = false;
 		closesocket(m_listenSocket);
-		WSACleanup();
-		return result;
+		WSACleanup(); 
+		return bResult;
 	}
 
-	return result;
+	return bResult;
 }
 
 /*accept client socket
@@ -113,9 +114,115 @@ Error ServerNetworker::init()
 	return result;
 }
 
-bool send(std::string a_message);
-std::string receive();
-bool shutdownSend();
-bool shutdownRecieve();
-bool shutdownSendRecieve();
+/*sending string to client
+* first of all send the size of string-message
+* Size of this sending message is default = sizeofint
+* then send message
+* return true if sendindg was successfull
+*/
+bool ServerNetworker::send(std::string a_message)
+{
+	int result = SOCKET_ERROR;
+	union
+	{
+		char cSize[4];
+		int iSize;
+	} uMessageSize;
 
+	uMessageSize.iSize = a_message.size();
+
+	//send message-string size
+	result = _WINSOCKAPI_::send(m_connectSocket, uMessageSize.cSize, sizeof(uMessageSize), 0);
+
+	if (result == SOCKET_ERROR)
+	{
+		return false;
+	}
+	else
+	{
+		//send message-string
+		result = _WINSOCKAPI_::send(m_connectSocket, a_message.c_str(), uMessageSize.iSize, 0);
+	}
+
+	if (result == SOCKET_ERROR)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+
+}
+std::string ServerNetworker::receive()
+{
+	std::string strBuff;
+	union
+	{
+		char cSize[4];
+		int iSize;
+	} uMessageSize;
+	int result = -1;
+
+	//recieve message size
+	result = recv(m_connectSocket, uMessageSize.cSize, sizeof(uMessageSize), 0);
+
+	if (result == SOCKET_ERROR)
+	{
+		strBuff = "";
+		return strBuff;
+	}
+	else
+	{
+		//recieve string-message
+		std::vector<char> vBuff(MAX_BUFF_LEN);
+		int byteRecieved = 0, tempByteRecieved = 0;
+
+		while (byteRecieved < uMessageSize.iSize)
+		{
+			tempByteRecieved = recv(m_connectSocket, &vBuff[0], uMessageSize.iSize, 0);
+			if (tempByteRecieved == -1)
+			{
+				strBuff = "";
+				return strBuff;
+			}
+			else
+			{
+				strBuff.append(vBuff.cbegin(), vBuff.cend());
+			}
+			byteRecieved += tempByteRecieved;
+		}
+		return strBuff;
+	}
+}
+
+/* stopped sending process for currens socket
+* return true if shutdown was successfull
+*/
+bool ServerNetworker::shutdownSend()
+{
+	int result = -1;
+	result = _WINSOCKAPI_::shutdown(m_connectSocket, 1); //return zero if is successfull
+	return !result;
+}
+
+
+/* stopped sending process for currens socket
+* return true if shutdown was successfull
+*/
+bool ServerNetworker::shutdownRecieve()
+{
+	int result = -1;
+	result = _WINSOCKAPI_::shutdown(m_connectSocket, 0); //return zero if is successfull
+	return !result;
+}
+
+/* stopped sending process for currens socket
+* return true if shutdown was successfull
+*/
+bool ServerNetworker::shutdownSendRecieve()
+{
+	int result = -1;
+	result = _WINSOCKAPI_::shutdown(m_connectSocket, 2); //return zero if is successfull
+	return !result;
+}

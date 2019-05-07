@@ -162,7 +162,7 @@ std::string ClientNetworker::receive()
 		std::vector<char> vBuff(MAX_BUFF_LEN);
 		int byteRecieved = 0, tempByteRecieved=0;
 
-		while (byteRecieved != uMessageSize.iSize)
+		while (byteRecieved < uMessageSize.iSize)
 		{
 			tempByteRecieved = recv(m_connectSocket, &vBuff[0], uMessageSize.iSize, 0);
 			if (tempByteRecieved == -1)
@@ -174,6 +174,7 @@ std::string ClientNetworker::receive()
 			{
 				strBuff.append(vBuff.cbegin(), vBuff.cend());
 			}
+			byteRecieved += tempByteRecieved;
 		}
 		return strBuff;
 	}

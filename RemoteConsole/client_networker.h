@@ -1,6 +1,8 @@
 #pragma once
 #include "base_networker.h"
 
+class BaseNetworker;
+
 class ClientNetworker : public BaseNetworker
 {
 public:

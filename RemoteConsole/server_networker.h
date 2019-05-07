@@ -1,7 +1,9 @@
 #pragma once
 #include "base_networker.h"
 //TODO: do it multi-thread - create vector with sockets and create new thread when new cliend is connecting
-//implemet send/recieve and shutdown
+//bring serd/recieve and shutdown-methods to base class
+
+class BaseNetworker;
 
 class ServerNetworker : public BaseNetworker
 {
