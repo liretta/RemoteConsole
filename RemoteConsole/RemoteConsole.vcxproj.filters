@@ -38,5 +38,8 @@
     <ClInclude Include="server_networker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ManualTestNetworker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

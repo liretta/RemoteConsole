@@ -83,13 +83,13 @@ bool ClientNetworker::create_socket()
 bool ClientNetworker::create_connection()
 {
 	bool result = false;
-	result = connect(m_connectSocket, (SOCKADDR*)&m_addr, sizeof(m_addr));
-	if (result == false)
+	result = connect(m_connectSocket, (SOCKADDR*)&m_addr, sizeof(m_addr)); //return zero if successful
+	if (!result == false)
 	{
 		closesocket(m_connectSocket);
 		m_connectSocket = INVALID_SOCKET;
 	}
-	return result;
+	return !result;
 }
 
 /*sending string to server
@@ -172,7 +172,7 @@ std::string ClientNetworker::receive()
 			}
 			else
 			{
-				strBuff.append(vBuff.cbegin(), vBuff.cend());
+				strBuff.append(vBuff.cbegin(), vBuff.cbegin()+uMessageSize.iSize);
 			}
 			byteRecieved += tempByteRecieved;
 		}
