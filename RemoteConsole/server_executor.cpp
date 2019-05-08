@@ -2,8 +2,8 @@
 
 static wchar_t* ANSItoUNICODE(char* line)
 {
-	std::size_t
-		length = strlen(line) + 1,
+	int
+		length = int(strlen(line)) + 1,
 		size_needed = MultiByteToWideChar(CP_OEMCP, 0, line, length, nullptr, 0);
 
 	wchar_t* w_line =
@@ -36,113 +36,98 @@ bool ServerExecutor::initialize()
 		is_initialized = false;
 	}
 
-	if (CreatePipe(&m_child_in_read,
-				   &m_child_in_write, &m_security_attributes, 0) != TRUE)
-	{
-		is_initialized = false;
-	}
-
-	// Ensure the read handle to the pipe for STDOUT is not inherited.
-	if (SetHandleInformation(m_child_out_write,
-							 HANDLE_FLAG_INHERIT, 0) != TRUE)
-	{
-		is_initialized = false;
-	}
-
-
 	return is_initialized;
 }
 
-bool ServerExecutor::startProcess()
+void ServerExecutor::execute(const std::wstring& command)
 {
-	bool is_created = true;
+	wchar_t w_command[MAX_PATH];
+	wcscpy_s(w_command, command.data());
 
-	WCHAR szCmdline[] = L"ServerExecutorChildProcess";
-	PROCESS_INFORMATION piProcInfo;
-	STARTUPINFOW siStartInfo;
-	BOOL bSuccess = FALSE;
+	PROCESS_INFORMATION process_information;
+	ZeroMemory(&process_information, sizeof(PROCESS_INFORMATION));
 
-	// Set up members of the PROCESS_INFORMATION structure. 
-
-	ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
-
-	// Set up members of the STARTUPINFO structure. 
+	STARTUPINFOW startup_info;
+	ZeroMemory(&startup_info, sizeof(STARTUPINFOW));
+	// Set up members of the STARTUPINFOW structure. 
 	// This structure specifies the STDIN and STDOUT handles for redirection.
-
-	ZeroMemory(&siStartInfo, sizeof(STARTUPINFOW));
-	siStartInfo.cb = sizeof(STARTUPINFOW);
-	siStartInfo.hStdError = m_child_out_write;
-	siStartInfo.hStdOutput = m_child_out_write;
-	siStartInfo.hStdInput = m_child_in_read;
-	siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
+	startup_info.cb = sizeof(STARTUPINFOW);
+	startup_info.hStdError = m_child_out_write;
+	startup_info.hStdOutput = m_child_out_write;
+	startup_info.hStdInput = nullptr;
+	startup_info.dwFlags |= STARTF_USESTDHANDLES;
 
 	// Create the child process. 
+	BOOL is_created = FALSE;
+	is_created = CreateProcessW(
+		nullptr,
+		w_command,				// command line 
+		nullptr,				// process security attributes 
+		nullptr,				// primary thread security attributes 
+		TRUE,					// handles are inherited 
+		0,						// creation flags 
+		nullptr,				// use parent's environment 
+		nullptr,				// use parent's current directory 
+		&startup_info,			// STARTUPINFOW pointer 
+		&process_information	// receives PROCESS_INFORMATION 
+	);
 
-	bSuccess = CreateProcessW(NULL,
-		szCmdline,     // command line 
-		NULL,          // process security attributes 
-		NULL,          // primary thread security attributes 
-		TRUE,          // handles are inherited 
-		0,             // creation flags 
-		NULL,          // use parent's environment 
-		NULL,          // use parent's current directory 
-		&siStartInfo,  // STARTUPINFO pointer 
-		&piProcInfo);  // receives PROCESS_INFORMATION 
-
-	 // If an error occurs, exit the application. 
-	if (!bSuccess)
+	// If an error occurs, exit the application. 
+	if (is_created != TRUE)
 	{
-		is_created = false;
+		std::string message;
+
+		DWORD error = GetLastError();
+		DWORD written_symbols_count;
+		switch (error)
+		{
+		case 2:
+			message = "Invalid command";
+			break;
+		}
+
+		if (error != 0)
+		{
+			WriteFile(m_child_out_write, message.data(),
+				DWORD(message.size()) + 1, &written_symbols_count, nullptr);
+		}
 	}
 	else
 	{
 		// Close handles to the child process and its primary thread.
 		// Some applications might keep these handles to monitor the status
 		// of the child process, for example. 
-
-		CloseHandle(piProcInfo.hProcess);
-		CloseHandle(piProcInfo.hThread);
+		CloseHandle(process_information.hProcess);
+		CloseHandle(process_information.hThread);
 	}
-
-	return is_created;
-}
-
-void ServerExecutor::execute(const std::wstring& command)
-{
-	DWORD dwWritten;
-	
-
-	BOOL is_written = WriteFile(
-		m_child_in_write, command.data(), command.size(), &dwWritten, NULL);
-
-	// Close the pipe handle so the child process stops reading. 
-
-	if (!CloseHandle(m_child_in_write))
-		std::cerr << "StdInWr CloseHandle Error";
 }
 
 std::wstring ServerExecutor::getResult() const
 {
 	std::wstring result;
 
-	DWORD dwRead, dwWritten;
-	CHAR chBuf[BUFSIZE];
-	BOOL bSuccess = FALSE;
+	DWORD read_symbols_count = 0;
+	char buffer[BUFSIZE];
+	BOOL is_read = FALSE;
 
 	CloseHandle(m_child_out_write);
 
-	wchar_t* w_line = nullptr;
-	for (;;)
+	wchar_t* w_tmp_buffer = nullptr;
+	do
 	{
-		bSuccess = ReadFile(m_child_out_read, chBuf, BUFSIZE, &dwRead, nullptr);
-		if (!bSuccess || dwRead == 0) break;
+		memset(buffer, 0, BUFSIZE);
 
-		w_line = ANSItoUNICODE(chBuf);
-		result.append(w_line);
+		is_read = ReadFile(
+			m_child_out_read, buffer, BUFSIZE,
+			&read_symbols_count, nullptr);
 
-		LocalFree(w_line);
-		if (!bSuccess) break;
+		w_tmp_buffer = ANSItoUNICODE(buffer);
+		result.append(w_tmp_buffer);
+
+		LocalFree(w_tmp_buffer);
 	}
+	while (is_read == TRUE && read_symbols_count != 0);
+
 
 	return result;
 }

@@ -1,7 +1,5 @@
-#include <windows.h> 
-#include <tchar.h>
-#include <stdio.h> 
-#include <strsafe.h>
+#include <string>
+#include <iostream>
 
 #include "server_executor.h"
 
@@ -10,16 +8,14 @@ int main()
 	ServerExecutor executor;
 	if (executor.initialize())
 	{
-		if (executor.startProcess())
-		{
-			executor.execute(L"help");
-			std::wcout << executor.getResult();
-		}
+		executor.execute(std::wstring(L"help"));
+
+		auto text = executor.getResult();
 	}
 	else
 	{
-		std::cout << "Cannot initialize Executor\n";
-	} 
+		std::cerr << "cannot initialize executor" << std::endl;
+	}
 
 	return 0;
 }
