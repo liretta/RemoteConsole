@@ -18,6 +18,7 @@ public:
 	ServerExecutor() = default;
 
 	bool initialize();
+	bool startProcess();
 	void execute(const std::wstring& command);
 	std::wstring getResult() const;
 
@@ -28,6 +29,8 @@ private:
 
 	HANDLE
 		m_child_out_read,
-		m_child_out_write;
+		m_child_out_write,
+		m_child_in_read,
+		m_child_in_write;
 	
 };

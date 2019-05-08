@@ -1,24 +1,25 @@
+#include <windows.h> 
+#include <tchar.h>
+#include <stdio.h> 
+#include <strsafe.h>
+
 #include "server_executor.h"
-#include <string>
-#include <iostream>
 
 int main()
 {
 	ServerExecutor executor;
 	if (executor.initialize())
 	{
-		executor.execute(std::wstring(L"dir"));
-
-		auto text = executor.getResult();
-		std::wcout << text.size() << '\n' << text << std::endl;
+		if (executor.startProcess())
+		{
+			executor.execute(L"help");
+			std::wcout << executor.getResult();
+		}
 	}
 	else
 	{
-		std::cerr << "cannot initialize executor" << std::endl;
-	}
+		std::cout << "Cannot initialize Executor\n";
+	} 
 
-	
-
-	system("PAUSE");
 	return 0;
 }
