@@ -1,4 +1,6 @@
 Source.cpp
+RemoteConsole/RemoteConsole.vcxproj
+RemoteConsole/RemoteConsole.vcxproj.filters
 >>>>>>> 3823e718e298059ab603ebcae03ded4a7d23e838
 
 ## Ignore Visual Studio temporary files, build results, and
