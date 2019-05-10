@@ -115,12 +115,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="base_networker.cpp" />
     <ClCompile Include="client_networker.cpp" />
     <ClCompile Include="server_networker.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base_networker.h" />
+    <ClInclude Include="i_networker.h" />
     <ClInclude Include="client_networker.h" />
     <ClInclude Include="error_list.h" />
     <ClInclude Include="ManualTestNetworker.h" />

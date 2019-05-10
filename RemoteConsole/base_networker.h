@@ -1,31 +1,34 @@
 #pragma once
 #pragma comment (lib, "Ws2_32.lib")
+#include "i_networker.h"
+#include "error_list.h"
 
 #include <winsock.h>
 #include <string>
 #include <vector>
-#include "error_list.h"
+
 static const unsigned int MAX_BUFF_LEN = 4096;
 
 
-class BaseNetworker
+class BaseNetworker: public INetworker
 {
 public:
-	BaseNetworker() {};
+	BaseNetworker();
 	virtual ~BaseNetworker() {};
+	bool send(std::string a_message); //send message through connection socket
+	std::string receive(); //receive message from connection socket
 	virtual Error init() = 0;
-	virtual bool send(std::string a_message)= 0;
-	virtual std::string receive() = 0;
-	virtual bool shutdownSend() = 0;
-	virtual bool shutdownRecieve() = 0;
-	virtual bool shutdownSendRecieve() = 0;
+	bool shutdownSend(); //shutdown network object for sending
+	bool shutdownRecieve(); //shutdown network object for receiving
+	bool shutdownSendRecieve(); //shutdown network object for sending and receiving
 
-private:
-	WSAData m_wsa;
-	SOCKET m_connectSocket;
-	SOCKADDR_IN m_addr;
+protected:
+	WSAData m_wsa; //library data
+	SOCKET m_connectSocket; //socket for connection
+	SOCKADDR_IN m_addr; //structure with adress, protocol and other data for creating connection
 
-	virtual bool init_library() = 0;
-	virtual bool create_socket() = 0;
-	virtual bool create_connection() = 0;
+	bool init_library(); //initialize library
+	virtual bool create_socket() = 0; //create socket for connection
+	virtual bool create_connection() = 0; //create connection with socket
 };
+

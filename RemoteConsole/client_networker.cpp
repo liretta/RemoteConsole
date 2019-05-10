@@ -2,8 +2,6 @@
 
 ClientNetworker::ClientNetworker()
 {
-	m_connectSocket = INVALID_SOCKET;
-
 }
 
 ClientNetworker::~ClientNetworker()
@@ -41,16 +39,6 @@ Error ClientNetworker::init()
 	return result;
 };
 
-/*initialized library for networking
-* return true if initialize was successfull
-*/
-bool ClientNetworker::init_library()
-{
-	bool result = false;
-	WORD DLLVersion = MAKEWORD(2, 1);
-	result = WSAStartup(DLLVersion, &m_wsa); //return zero, if successfull
-	return !result;
-}
 
 /*create socket for connection
 * return true if socket was create successfull
@@ -89,124 +77,5 @@ bool ClientNetworker::create_connection()
 		closesocket(m_connectSocket);
 		m_connectSocket = INVALID_SOCKET;
 	}
-	return !result;
-}
-
-/*sending string to server
-* first of all send the size of string-message
-* Size of this sending message is default = sizeofint
-* then send message
-* return true if sendindg was successfull
-*/
-bool ClientNetworker::send(std::string a_message)
-{
-	int result = SOCKET_ERROR;
-	union 
-	{
-		char cSize[4];
-		int iSize;
-	} uMessageSize;
-	
-	uMessageSize.iSize = a_message.size();
-
-	//send message-string size
-	result = _WINSOCKAPI_::send(m_connectSocket, uMessageSize.cSize, sizeof(uMessageSize), 0);
-
-	if (result == SOCKET_ERROR)
-	{
-		return false;
-	}
-	else
-	{
-		result = _WINSOCKAPI_::send(m_connectSocket, a_message.c_str(), uMessageSize.iSize, 0);
-	}
-
-	if (result == SOCKET_ERROR)
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
-};
-
-/*revieved string from connection socket
-* first of all recieved info with size of string-message
-* size of this message is defaul = sizeofint
-* then recieved string-message
-* if recieved was sucessfull, return string from server
-* otherwise, return string with error-message
-*/
-std::string ClientNetworker::receive()
-{
-	std::string strBuff;
-	union
-	{
-		char cSize[4];
-		int iSize;
-	} uMessageSize;
-	int result = -1;
-	
-	//recieve message size
-	result = recv(m_connectSocket, uMessageSize.cSize, sizeof(uMessageSize), 0);
-	
-	if (result == SOCKET_ERROR)
-	{
-		strBuff = "";
-		return strBuff;
-	}
-	else
-	{
-		//recieve string-message
-		std::vector<char> vBuff(MAX_BUFF_LEN);
-		int byteRecieved = 0, tempByteRecieved=0;
-
-		while (byteRecieved < uMessageSize.iSize)
-		{
-			tempByteRecieved = recv(m_connectSocket, &vBuff[0], uMessageSize.iSize, 0);
-			if (tempByteRecieved == -1)
-			{
-				strBuff = "";
-				return strBuff;
-			}
-			else
-			{
-				strBuff.append(vBuff.cbegin(), vBuff.cbegin()+uMessageSize.iSize);
-			}
-			byteRecieved += tempByteRecieved;
-		}
-		return strBuff;
-	}
-}
-
-/* stopped sending process for currens socket
-* return true if shutdown was successfull
-*/
-bool ClientNetworker::shutdownSend() 
-{
-	int result = -1;
-	result = _WINSOCKAPI_::shutdown(m_connectSocket, 1); //return zero if is successfull
-	return !result;
-}
-
-
-/* stopped sending process for currens socket
-* return true if shutdown was successfull
-*/
-bool ClientNetworker::shutdownRecieve()
-{
-	int result = -1;
-	result = _WINSOCKAPI_::shutdown(m_connectSocket, 0); //return zero if is successfull
-	return !result;
-}
-
-/* stopped sending process for currens socket
-* return true if shutdown was successfull
-*/
-bool ClientNetworker::shutdownSendRecieve()
-{
-	int result = -1;
-	result = _WINSOCKAPI_::shutdown(m_connectSocket, 2); //return zero if is successfull
 	return !result;
 }
