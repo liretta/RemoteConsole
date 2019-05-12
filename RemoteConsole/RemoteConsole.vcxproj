@@ -115,7 +115,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="base_networker.cpp" />
     <ClCompile Include="client_networker.cpp" />
+    <ClCompile Include="CodeStyleExmpl.cpp" />
+    <ClCompile Include="server_executor.cpp" />
     <ClCompile Include="server_networker.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
@@ -123,7 +126,9 @@
     <ClInclude Include="base_networker.h" />
     <ClInclude Include="client_networker.h" />
     <ClInclude Include="error_list.h" />
+    <ClInclude Include="i_networker.h" />
     <ClInclude Include="ManualTestNetworker.h" />
+    <ClInclude Include="server_executor.h" />
     <ClInclude Include="server_networker.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -2,48 +2,56 @@
 
 BaseNetworker::BaseNetworker() 
 {
-	m_connectSocket = INVALID_SOCKET;
+	m_connect_socket = INVALID_SOCKET;
 	ZeroMemory(&m_addr, sizeof(m_addr));
+	ZeroMemory(&m_wsa, sizeof(m_wsa));
 };
 
-/*initialized library for networking
-* return true if initialize was successfull
-*/
+BaseNetworker::~BaseNetworker()
+{
+	closesocket(m_connect_socket);
+	WSACleanup();
+}
+
+/*!
+ * initialized library for networking
+ * @return true if initialize was successful
+ */
 bool BaseNetworker::init_library()
 {
 	bool result = true;
 	WORD DLLVersion = MAKEWORD(2, 1);
-	result = WSAStartup(DLLVersion, &m_wsa); //return zero if it successfull
+	result = WSAStartup(DLLVersion, &m_wsa); //return zero if it successful
 	return !result;
 }
 
-/*sending string through connection socket
-* first of all send the size of string-message
-* size of this sending message is default = sizeofint
-* then send string message
-* return true if sendindg was successfull
-*/
+/*!
+ * sending string through connection socket
+ * first of all send the size of string-message
+ * size of this sending message is default = sizeofint
+ * then send string message
+ * @return true if sending was successful
+ */
 bool BaseNetworker::send(std::string a_message)
 {
 	int result = SOCKET_ERROR;
 	union
 	{
-		char cSize[4];
-		int iSize;
-	} uMessageSize;
+		char c_size[4];
+		int i_size;
+	} u_message_size;
+	u_message_size.i_size = a_message.size();
 
-	uMessageSize.iSize = a_message.size();
-
-	//send message-string size
-	result = _WINSOCKAPI_::send(m_connectSocket, uMessageSize.cSize, sizeof(uMessageSize), 0); 
+	//send size of message
+	result = _WINSOCKAPI_::send(m_connect_socket, u_message_size.c_size, sizeof(u_message_size), 0);
 	if (result == SOCKET_ERROR)
 	{
 		return false;
 	}
 	else
 	{
-		//send message-string
-		result = _WINSOCKAPI_::send(m_connectSocket, a_message.c_str(), uMessageSize.iSize, 0);
+		//send message string
+		result = _WINSOCKAPI_::send(m_connect_socket, a_message.c_str(), u_message_size.i_size, 0);
 	}
 
 	if (result == SOCKET_ERROR)
@@ -54,83 +62,87 @@ bool BaseNetworker::send(std::string a_message)
 	return true;
 }
 
-/*receive string from connection socket
-* first of all receiving the size of string-message
-* size of this sending message is default = sizeofint
-* then receive string message
-* return received string if sendindg was successfull
-* return string "#Error" in another case
-*/
+/*!
+ * receive string from connection socket
+ * first of all receiving the size of string-message
+ * size of this sending message is default = sizeofint
+ * then receive message
+ * @return received string if sending was successful
+ * @return string "#Error" in another case
+ */
 std::string BaseNetworker::receive()
 {
-	std::string strBuff;
+	std::string str_buff;
 	union
 	{
-		char cSize[4];
-		int iSize;
-	} uMessageSize;
+		char c_size[4];
+		int i_size;
+	} u_message_size;
+	u_message_size.i_size = 0;
 	int result = -1;
 
-	//recieve message size
-	result = recv(m_connectSocket, uMessageSize.cSize, sizeof(uMessageSize), 0);
+	//receive message size
+	result = recv(m_connect_socket, u_message_size.c_size, sizeof(u_message_size), 0);
 
 	if (result == SOCKET_ERROR)
 	{
-		strBuff = "#Error";
-		return strBuff;
+		str_buff = "#Error";
+		return str_buff;
 	}
 	else
 	{
-		//recieve string-message
-		std::vector<char> vBuff(MAX_BUFF_LEN);
-		int byteRecieved = 0, tempByteRecieved = 0;
+		//receive string-message
+		std::vector<char> v_buff(MAX_BUFF_LEN);
+		int byte_received = 0, temp_byte_received = 0;
 
-		while (byteRecieved < uMessageSize.iSize)
+		while (byte_received < u_message_size.i_size)
 		{
-			tempByteRecieved = recv(m_connectSocket, &vBuff[0], uMessageSize.iSize, 0);
-			if (tempByteRecieved == -1)
+			temp_byte_received = recv(m_connect_socket, &v_buff[0], u_message_size.i_size, 0);
+			if (temp_byte_received == -1)
 			{
-				strBuff = "#Error";
-				return strBuff;
+				str_buff = "#Error";
+				return str_buff;
 			}
 			else
 			{
-				strBuff.append(vBuff.cbegin(), vBuff.cbegin()+ uMessageSize.iSize);
+				str_buff.append(v_buff.cbegin(), v_buff.cbegin()+ u_message_size.i_size);
 			}
-			byteRecieved += tempByteRecieved;
+			byte_received += temp_byte_received;
 		}
-		return strBuff;
+		return str_buff;
 	}
 }
 
 
-/* stopped sending process for currens socket
-* return true if shutdown was successfull
-*/
+/*!
+ * stopped sending process for current socket
+ * @return true if shutdown was successful
+ */
 bool BaseNetworker::shutdownSend()
 {
 	int result = -1;
-	result = _WINSOCKAPI_::shutdown(m_connectSocket, 1); //return zero if is successfull
+	result = _WINSOCKAPI_::shutdown(m_connect_socket, 1); //return zero if is successful
 	return !result;
 }
 
-
-/* stopped sending process for currens socket
-* return true if shutdown was successfull
-*/
-bool BaseNetworker::shutdownRecieve()
+/*!
+ * stopped sending process for current socket
+ * @return true if shutdown was successful
+ */
+bool BaseNetworker::shutdownReceive()
 {
 	int result = -1;
-	result = _WINSOCKAPI_::shutdown(m_connectSocket, 0); //return zero if is successfull
+	result = _WINSOCKAPI_::shutdown(m_connect_socket, 0); //return zero if is successful
 	return !result;
 }
 
-/* stopped sending process for currens socket
-* return true if shutdown was successfull
-*/
-bool BaseNetworker::shutdownSendRecieve()
+/*!
+ * stopped sending process for current socket
+ * @return true if shutdown was successful
+ */
+bool BaseNetworker::shutdownSendReceive()
 {
 	int result = -1;
-	result = _WINSOCKAPI_::shutdown(m_connectSocket, 2); //return zero if is successfull
+	result = _WINSOCKAPI_::shutdown(m_connect_socket, 2); //return zero if is successful
 	return !result;
 }

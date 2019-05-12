@@ -15,13 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="client_networker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="server_networker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="base_networker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="server_executor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CodeStyleExmpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -39,6 +48,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ManualTestNetworker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="i_networker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="server_executor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
