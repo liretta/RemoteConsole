@@ -1,5 +1,7 @@
 #include "server_executor.h"
 
+#include <iostream>
+
 static wchar_t* ANSItoUNICODE(char* line)
 {
 	int
@@ -18,7 +20,9 @@ static wchar_t* ANSItoUNICODE(char* line)
 
 static std::wstring COMMANDLINEtoCMDCOMMAND(const std::wstring& command_line)
 {
-	return std::wstring(L"cmd /C ") + command_line;
+	std::wstring cmd_command(L"/C ");
+	cmd_command.append(command_line);
+	return cmd_command;
 }
 
 
@@ -43,6 +47,8 @@ bool ServerExecutor::initialize()
 		is_initialized = false;
 	}
 
+	m_is_initialized = is_initialized;
+
 	return is_initialized;
 }
 
@@ -54,42 +60,19 @@ void ServerExecutor::execute(const std::wstring& command)
 	wchar_t w_command[MAX_PATH];
 	wcscpy_s(w_command, cmd_command.data());
 
+
 	PROCESS_INFORMATION process_information;
-	ZeroMemory(&process_information, sizeof(PROCESS_INFORMATION));
+	STARTUPINFOW		startup_info;
 
-	STARTUPINFOW startup_info;
-	ZeroMemory(&startup_info, sizeof(STARTUPINFOW));
-	// set up members of the STARTUPINFOW structure
-	// this structure specifies the STDIN and STDOUT handles for redirection
-	startup_info.cb = sizeof(STARTUPINFOW);
-	startup_info.hStdError = m_child_out_write;
-	startup_info.hStdOutput = m_child_out_write;
-	startup_info.hStdInput = nullptr;
-	startup_info.dwFlags |= STARTF_USESTDHANDLES;
+	bool is_created = create_sub_process(process_information,
+										 startup_info, w_command);
 
-	// create the child process
-	BOOL is_created = CreateProcessW(
-		nullptr,
-		w_command,				// command line 
-		nullptr,				// process security attributes 
-		nullptr,				// primary thread security attributes 
-		TRUE,					// handles are inherited 
-		0,						// creation flags 
-		nullptr,				// use parent's environment 
-		nullptr,				// use parent's current directory 
-		&startup_info,			// STARTUPINFOW pointer 
-		&process_information	// receives PROCESS_INFORMATION 
-	);
-
-	if (is_created != TRUE)
+	if (!is_created)
 	{
 		send_error_message();
 	}
 	else
 	{
-		// close handles to the child process and its primary thread;
-		// some applications might keep these handles to monitor the status
-		// of the child process, for example
 		CloseHandle(process_information.hProcess);
 		CloseHandle(process_information.hThread);
 	}
@@ -125,6 +108,11 @@ std::wstring ServerExecutor::getResult() const
 	return result;
 }
 
+bool ServerExecutor::isInitialized() const
+{
+	return m_is_initialized;
+}
+
 
 void ServerExecutor::send_error_message()
 {
@@ -139,13 +127,54 @@ void ServerExecutor::send_error_message()
 		case 2:
 			message = "Invalid command";
 			break;
+		case 6:
+			message = "Invalid server process";
+			break;
 		default:
 			message = "Unhandled error";
 			break;
 		}
 
-		DWORD written_symbols_count; //< cannot pass nullptr, so need a variable
-		WriteFile(m_child_out_write, message.data(),
-				  DWORD(message.size()) + 1, &written_symbols_count, nullptr);
+		// cannot pass nullptr, so need a variable
+		DWORD written_symbols_count;
+		BOOL is_written = WriteFile(
+			m_child_out_write, message.data(),
+			DWORD(message.size()) + 1, &written_symbols_count, nullptr
+		);
+
+		if (!is_written)
+		{
+			std::cerr << "ERROR: " << GetLastError() << "cannot write error message to pipe\n";
+		}
 	}
+}
+
+bool ServerExecutor::create_sub_process(
+	PROCESS_INFORMATION& process_info,
+	STARTUPINFOW& startup_info, wchar_t* w_command) const
+{
+	ZeroMemory(&process_info, sizeof(PROCESS_INFORMATION));
+
+	ZeroMemory(&startup_info, sizeof(STARTUPINFOW));
+	startup_info.cb = sizeof(STARTUPINFOW);
+	startup_info.hStdError = m_child_out_write;
+	startup_info.hStdOutput = m_child_out_write;
+	startup_info.hStdInput = nullptr;
+	startup_info.dwFlags |= STARTF_USESTDHANDLES;
+
+	// create a child process
+	BOOL is_created = CreateProcessW(
+		L"C:\\Windows\\System32\\cmd.exe",
+		w_command,
+		nullptr,
+		nullptr,
+		TRUE,
+		0,
+		nullptr,
+		nullptr,
+		&startup_info,
+		&process_info
+	);
+
+	return is_created == TRUE;
 }

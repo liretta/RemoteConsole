@@ -15,11 +15,7 @@ public:
 	virtual bool			initialize()							= 0;
 	virtual void			execute(const std::wstring& command)	= 0;
 	virtual std::wstring	getResult() const						= 0;
-};
-
-class ServerExecutorStub : public IServerExecutor
-{
-	//
+	virtual bool			isInitialized() const					= 0;
 };
 
 
@@ -48,12 +44,17 @@ public:
 	 */
 	std::wstring	getResult() const						override;
 
-private:
+	bool isInitialized() const								override;
+
+protected:
 
 	/*!
 	 * Write the error message to sub-process output if the error exists.
 	 */
-	void send_error_message();
+	virtual void send_error_message();
+
+	virtual bool create_sub_process(PROCESS_INFORMATION&, STARTUPINFOW&, wchar_t*) const;
+
 
 	SECURITY_ATTRIBUTES
 		m_security_attributes;
@@ -61,4 +62,6 @@ private:
 	HANDLE
 		m_child_out_read,
 		m_child_out_write;
+
+	bool m_is_initialized;
 };
