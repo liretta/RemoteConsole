@@ -48,6 +48,8 @@ public:
 	 */
 	std::wstring	getResult() const						override;
 
+	bool isInitialized() const;
+
 private:
 
 	/*!
@@ -55,10 +57,15 @@ private:
 	 */
 	void send_error_message();
 
+	bool create_sub_process(PROCESS_INFORMATION& process_info,
+							wchar_t* w_command);
+
 	SECURITY_ATTRIBUTES
 		m_security_attributes;
 
 	HANDLE
 		m_child_out_read,
 		m_child_out_write;
+
+	bool m_is_initialized = false;
 };
