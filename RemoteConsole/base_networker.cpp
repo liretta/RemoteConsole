@@ -95,9 +95,10 @@ std::string BaseNetworker::receive()
 		std::vector<char> v_buff(MAX_BUFF_LEN);
 		int byte_received = 0, temp_byte_received = 0;
 
+		//read message in parts
 		while (byte_received < u_message_size.i_size)
 		{
-			temp_byte_received = recv(m_connect_socket, &v_buff[0], u_message_size.i_size, 0);
+			temp_byte_received = recv(m_connect_socket, &v_buff[0]+byte_received, u_message_size.i_size - byte_received, 0);
 			if (temp_byte_received == -1)
 			{
 				str_buff = "#Error";
@@ -105,10 +106,15 @@ std::string BaseNetworker::receive()
 			}
 			else
 			{
-				str_buff.append(v_buff.cbegin(), v_buff.cbegin()+ u_message_size.i_size);
-			}
-			byte_received += temp_byte_received;
+				byte_received += temp_byte_received;
+			}	
 		}
+
+		if (byte_received == u_message_size.i_size)
+		{
+			str_buff.append(v_buff.cbegin(), v_buff.cbegin() + u_message_size.i_size);
+		}
+
 		return str_buff;
 	}
 }
