@@ -8,7 +8,6 @@ std::wstring ServerRouter::process(const std::wstring& input)
 	if (!input.empty())
 	{
 		Marshaller::ModeIndex mode = Marshaller::getMode(input);
-
 		switch (mode)
 		{
 		case Marshaller::ModeIndex::Authorization:

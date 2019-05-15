@@ -37,7 +37,7 @@ public:
 	static bool			unpackResult(const std::wstring&);
 	static std::wstring	packResult(bool);
 
-private:
+//private:
 
 	static const wchar_t MODE[];
 	static const wchar_t SEPARATOR;
