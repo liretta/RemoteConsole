@@ -1,23 +1,9 @@
 #include "server_executor.h"
 #include <iostream>
+#include "converting_functions.hpp"
 
-static wchar_t* ANSItoUNICODE(char* line)
-{
-	int
-		length = int(strlen(line)) + 1,
-		size_needed = MultiByteToWideChar(CP_OEMCP, 0, line, length, nullptr, 0);
 
-	// allocate memory for the Unicode line
-	wchar_t* w_line =
-		static_cast<wchar_t*>(LocalAlloc(LPTR, sizeof(wchar_t) * size_needed));
-
-	// transform
-	MultiByteToWideChar(CP_OEMCP, 0, line, length, w_line, size_needed);
-
-	return w_line;
-}
-
-static std::wstring COMMANDLINEtoCMDCOMMAND(const std::wstring& command_line)
+static std::wstring toCONSOLECOMMAND(const std::wstring& command_line)
 {
 	return std::wstring(L"cmd /C ") + command_line;
 }
@@ -54,7 +40,7 @@ bool ServerExecutor::execute(const std::wstring& command)
 
 	if (m_is_initialized)
 	{
-		std::wstring cmd_command = COMMANDLINEtoCMDCOMMAND(command);
+		std::wstring cmd_command = toCONSOLECOMMAND(command);
 
 		wchar_t w_command[MAX_PATH];
 		wcscpy_s(w_command, cmd_command.data());
@@ -109,7 +95,7 @@ std::wstring ServerExecutor::getResult() const
 			w_tmp_buffer = ANSItoUNICODE(buffer);
 			result.append(w_tmp_buffer);
 
-			LocalFree(w_tmp_buffer);
+			delete w_tmp_buffer;
 		} while (is_read == TRUE && read_symbols_count != 0);
 	}
 	else
@@ -118,6 +104,9 @@ std::wstring ServerExecutor::getResult() const
 					<< "ServerExecutor is not initialized"
 					<< std::endl;
 	}
+
+	CloseHandle(m_child_out_read);
+
 	return result;
 }
 
@@ -137,7 +126,7 @@ void ServerExecutor::send_error_message()
 
 		switch (error)
 		{
-		case 2:
+		case ERROR_FILE_NOT_FOUND:
 			message = "Invalid command";
 			break;
 		default:

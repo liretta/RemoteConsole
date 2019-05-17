@@ -3,7 +3,7 @@
 #include <windows.h> 
 #include <string>
 
-#define BUFSIZE 4096
+constexpr unsigned BUFSIZE = 4096;
 
 
 class IServerExecutor
