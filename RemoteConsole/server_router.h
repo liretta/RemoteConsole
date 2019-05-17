@@ -1,9 +1,13 @@
 #pragma once
 #include "marshaller.h"
-#include "authorizer.h"
 #include "server_executor.h"
 
+class Authorizer
+{
+public:
 
+	bool authorize(const std::wstring&, const std::wstring&);
+};
 
 class ServerRouter
 {

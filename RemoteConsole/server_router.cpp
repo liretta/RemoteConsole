@@ -7,10 +7,10 @@ std::wstring ServerRouter::process(const std::wstring& input)
 
 	if (!input.empty())
 	{
-		Marshaller::ModeIndex mode = Marshaller::getMode(input);
+		Marshaller::Type mode = Marshaller::getMode(input);
 		switch (mode)
 		{
-		case Marshaller::ModeIndex::Authorization:
+		case Marshaller::Type::Authorization:
 			{
 				if (!m_authorizer)
 				{
@@ -19,7 +19,7 @@ std::wstring ServerRouter::process(const std::wstring& input)
 				result = process_authorization(input);
 				break;
 			}
-		case Marshaller::ModeIndex::Command:
+		case Marshaller::Type::Command:
 			{
 				if (!m_executor)
 				{
@@ -28,7 +28,7 @@ std::wstring ServerRouter::process(const std::wstring& input)
 				result = process_execution(input);
 				break;
 			}
-		case Marshaller::ModeIndex::Error:
+		case Marshaller::Type::Error:
 			{
 				process_error_message(input);
 				break;
@@ -43,14 +43,14 @@ std::wstring ServerRouter::process(const std::wstring& input)
 void ServerRouter::process_error_message(const std::wstring& input)
 {
 	auto text =
-		Marshaller::unpackMessage(Marshaller::ModeIndex::Error, input);
+		Marshaller::unpackMessage(Marshaller::Type::Error, input);
 	std::wcerr << text << std::endl;
 }
 
 std::wstring ServerRouter::process_authorization(const std::wstring& input)
 {
-	auto auth_data		= Marshaller::unpackAuthorizationData(input);
-	bool is_authorized	= m_authorizer->authorize(auth_data);
+	auto data = Marshaller::unpackAuthorizationData(input);
+	bool is_authorized = m_authorizer->authorize(data.first, data.second);
 
 	return Marshaller::packResult(is_authorized);
 }
@@ -62,21 +62,21 @@ std::wstring ServerRouter::process_execution(const std::wstring& input)
 	if (m_executor->isInitialized())
 	{
 		auto command =
-			Marshaller::unpackMessage(Marshaller::ModeIndex::Command, input);
+			Marshaller::unpackMessage(Marshaller::Type::Command, input);
 
 		bool is_executed	= m_executor->execute(command);
 		auto output			= m_executor->getResult();
 
-		Marshaller::ModeIndex mode =
-			(is_executed ?	Marshaller::ModeIndex::Command :
-							Marshaller::ModeIndex::Error);
+		Marshaller::Type mode =
+			(is_executed ?	Marshaller::Type::Command :
+							Marshaller::Type::Error);
 
 		result = Marshaller::packMessage(mode, output);
 	}
 	else
 	{
 		result =
-			Marshaller::packMessage(Marshaller::ModeIndex::Error,
+			Marshaller::packMessage(Marshaller::Type::Error,
 									L"Server is not able to execute commands");
 			
 		std::cerr << "ERROR: cannot initialize executor" << std::endl;

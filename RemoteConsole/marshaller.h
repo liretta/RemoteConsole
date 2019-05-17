@@ -10,7 +10,7 @@ class Marshaller
 {
 public:
 
-	enum class ModeIndex : int
+	enum class Type : int
 	{
 		Authorization,
 		Command,
@@ -21,17 +21,17 @@ public:
 	};
 
 
-	static ModeIndex getMode(const std::wstring& input);
+	static Type getMode(const std::wstring& input);
 
 	static std::pair<std::wstring, std::wstring>
 	unpackAuthorizationData(const std::wstring&);
 
 	static std::wstring
-	packAuthorizationData(const std::pair<std::wstring, std::wstring>&);
+	packAuthorizationData(const std::wstring&, const std::wstring&);
 
 
-	static std::wstring unpackMessage(ModeIndex, const std::wstring&);
-	static std::wstring packMessage(ModeIndex, const std::wstring&);
+	static std::wstring unpackMessage(Type, const std::wstring&);
+	static std::wstring packMessage(Type, const std::wstring&);
 
 
 	static bool			unpackResult(const std::wstring&);

@@ -27,12 +27,12 @@ TEST(ServerRouter, process_ReturnEmptyWstringIfParamModeIsWrong)
 
 TEST(ServerRouter, process_ReturnEmptyWstringIfParamModeIsError)
 {
-	int index = static_cast<int>(Marshaller::ModeIndex::Error);
+	int index = static_cast<int>(Marshaller::Type::Error);
 	ServerRouter router;
 
 	std::wstring
 		command	= L"here is an error",
-		input	= Marshaller::packMessage(Marshaller::ModeIndex::Error, command),
+		input	= Marshaller::packMessage(Marshaller::Type::Error, command),
 		output	= router.process(input);
 
 	EXPECT_EQ(std::wstring(), output);

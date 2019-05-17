@@ -15,7 +15,7 @@ static constexpr  std::size_t ARRAYSIZE(T(&)[N]) noexcept
 }
 
 
-Marshaller::ModeIndex Marshaller::getMode(const std::wstring& input)
+Marshaller::Type Marshaller::getMode(const std::wstring& input)
 {
 	wchar_t		mode_symbol	= input[0];
 	int			mode_size	= int(ARRAYSIZE(MODE));
@@ -26,10 +26,10 @@ Marshaller::ModeIndex Marshaller::getMode(const std::wstring& input)
 		++i;
 	}
 
-	ModeIndex result = ModeIndex::WrongModeSymbol;
+	Type result = Type::WrongModeSymbol;
 	if (i != mode_size)
 	{
-		result = static_cast<ModeIndex>(i);
+		result = static_cast<Type>(i);
 	}
 	else
 	{
@@ -44,7 +44,7 @@ Marshaller::unpackAuthorizationData(const std::wstring& w_line)
 	// template: Llogin|password
 
 	static std::wstring pattern =
-		MODE[static_cast<int>(ModeIndex::Authorization)] +
+		MODE[static_cast<int>(Type::Authorization)] +
 		std::wstring(L"([[:alnum:]]*)\\|([[:alnum:]]*)");
 
 	std::wregex		regex(pattern);
@@ -61,18 +61,19 @@ Marshaller::unpackAuthorizationData(const std::wstring& w_line)
 }
 
 std::wstring
-Marshaller::packAuthorizationData(const std::pair<std::wstring, std::wstring>& data)
+Marshaller::packAuthorizationData(const std::wstring& login,
+								  const std::wstring& password)
 {
 	std::wstring result;
-	result += MODE[static_cast<int>(ModeIndex::Authorization)];
-	result += data.first;
+	result += MODE[static_cast<int>(Type::Authorization)];
+	result += login;
 	result += SEPARATOR;
-	result += data.second;
+	result += password;
 
 	return result;
 }
 
-std::wstring Marshaller::unpackMessage(ModeIndex mode, const std::wstring& w_line)
+std::wstring Marshaller::unpackMessage(Type mode, const std::wstring& w_line)
 {
 	// template: Mmessage
 	std::wstring pattern =
@@ -91,7 +92,7 @@ std::wstring Marshaller::unpackMessage(ModeIndex mode, const std::wstring& w_lin
 	return message;
 }
 
-std::wstring Marshaller::packMessage(ModeIndex mode, const std::wstring& w_line)
+std::wstring Marshaller::packMessage(Type mode, const std::wstring& w_line)
 {
 	std::wstring result;
 	result += MODE[static_cast<int>(mode)];
@@ -103,7 +104,7 @@ std::wstring Marshaller::packMessage(ModeIndex mode, const std::wstring& w_line)
 bool Marshaller::unpackResult(const std::wstring& w_line)
 {
 	static std::wstring pattern =
-		MODE[static_cast<int>(ModeIndex::Result)] +
+		MODE[static_cast<int>(Type::Result)] +
 		std::wstring(L"(0|1)");
 
 	std::wregex		regex(pattern);
@@ -121,7 +122,7 @@ bool Marshaller::unpackResult(const std::wstring& w_line)
 std::wstring Marshaller::packResult(bool value)
 {
 	std::wstring result;
-	result += MODE[static_cast<int>(ModeIndex::Result)];
+	result += MODE[static_cast<int>(Type::Result)];
 	result += (value ? L'1' : L'0');
 
 	return result;
