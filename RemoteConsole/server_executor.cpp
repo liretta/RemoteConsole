@@ -39,7 +39,7 @@ bool ServerExecutor::initialize()
 
 	// ensure the read handle to the pipe for STDOUT is not inherited
 	if (SetHandleInformation(m_child_out_read,
-		HANDLE_FLAG_INHERIT, 0) != TRUE)
+							 HANDLE_FLAG_INHERIT, 0) != TRUE)
 	{
 		m_is_initialized = false;
 	}
@@ -48,8 +48,10 @@ bool ServerExecutor::initialize()
 }
 
 
-void ServerExecutor::execute(const std::wstring& command)
+bool ServerExecutor::execute(const std::wstring& command)
 {
+	bool is_executed = false;
+
 	if (m_is_initialized)
 	{
 		std::wstring cmd_command = COMMANDLINEtoCMDCOMMAND(command);
@@ -60,9 +62,9 @@ void ServerExecutor::execute(const std::wstring& command)
 		PROCESS_INFORMATION process_information;
 		ZeroMemory(&process_information, sizeof(PROCESS_INFORMATION));
 
-		bool is_created = create_sub_process(process_information, w_command);
+		is_executed = create_sub_process(process_information, w_command);
 
-		if (!is_created)
+		if (!is_executed)
 		{
 			send_error_message();
 		}
@@ -78,6 +80,8 @@ void ServerExecutor::execute(const std::wstring& command)
 					<< "ServerExecutor is not initialized"
 					<< std::endl;
 	}
+
+	return is_executed;
 }
 
 

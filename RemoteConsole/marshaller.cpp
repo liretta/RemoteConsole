@@ -2,7 +2,7 @@
 #include <iostream>
 #include <regex>
 
-const wchar_t Marshaller::MODE[]{ L'!', L'@', L'$', L'%', L'#' };
+const wchar_t Marshaller::MODE[]{ L'A', L'C', L'E', L'R', L'0' };
 const wchar_t Marshaller::SEPARATOR = L'|';
 
 /*!
@@ -75,7 +75,7 @@ Marshaller::packAuthorizationData(const std::pair<std::wstring, std::wstring>& d
 std::wstring Marshaller::unpackMessage(ModeIndex mode, const std::wstring& w_line)
 {
 	// template: Mmessage
-	static std::wstring pattern =
+	std::wstring pattern =
 		MODE[static_cast<int>(mode)] +
 		std::wstring(L"([[:print:]]*)");
 

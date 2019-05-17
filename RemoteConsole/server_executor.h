@@ -13,7 +13,7 @@ public:
 
 	
 	virtual bool			initialize()							= 0;
-	virtual void			execute(const std::wstring& command)	= 0;
+	virtual bool			execute(const std::wstring& command)	= 0;
 	virtual std::wstring	getResult() const						= 0;
 };
 
@@ -35,30 +35,31 @@ public:
 	 * Set up security attributes and create a pipe.
 	 * @return initialization status.
 	 */
-	bool			initialize()							override;
+	virtual bool			initialize()							override;
 
 	/*!
 	 * Execute Unicode command in a new sub-process.
+	 * @return whether the command was executed.
 	 */
-	void			execute(const std::wstring& command)	override;
+	virtual bool			execute(const std::wstring& command)	override;
 
 	/*!
 	 * Get output from the sub-process and transform it to Unicode.
 	 * @return Unicode stdout of the sub-process.
 	 */
-	std::wstring	getResult() const						override;
+	virtual std::wstring	getResult() const						override;
 
-	bool isInitialized() const;
+	virtual bool isInitialized() const;
 
 private:
 
 	/*!
 	 * Write the error message to sub-process output if the error exists.
 	 */
-	void send_error_message();
+	virtual void send_error_message();
 
-	bool create_sub_process(PROCESS_INFORMATION& process_info,
-							wchar_t* w_command);
+	virtual bool create_sub_process(PROCESS_INFORMATION& process_info,
+									wchar_t* w_command);
 
 	SECURITY_ATTRIBUTES
 		m_security_attributes;

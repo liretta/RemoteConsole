@@ -1,58 +1,8 @@
 #include "pch.h"
-#include "../RemoteConsole/server_executor.h"
+
 #include "../RemoteConsole/marshaller.h"
 
-using testing::_;
-using testing::Return;
 
-//class ServerExecutorMock : public ServerExecutor
-//{
-//public:
-//	MOCK_METHOD0(initialize, bool());
-//	MOCK_METHOD1(execute, void(const std::wstring&));
-//	MOCK_CONST_METHOD0(getResult, std::wstring());
-//
-//	MOCK_METHOD0(send_error_message, void());
-//	MOCK_CONST_METHOD0(get_last_error, DWORD());
-//	MOCK_CONST_METHOD3(create_sub_process,
-//					   bool(PROCESS_INFORMATION&, STARTUPINFOW&, wchar_t*));
-//
-//	void delegateToFake_create_sub_process()
-//	{
-//		ON_CALL(*this, create_sub_process(_, _, _))
-//			.WillByDefault(Return(false));
-//	}
-//};
-//
-//
-//
-//
-//
-//TEST(ServerExecutorTest, IsCalled_create_sub_process_OnceIfIsInitialized)
-//{
-//	ServerExecutorMock mock;
-//
-//	if (mock.ServerExecutor::initialize())
-//	{
-//		EXPECT_CALL(mock, create_sub_process(_, _, _)).Times(1);
-//
-//		mock.ServerExecutor::execute(L"help");
-//	}
-//}
-//
-//TEST(ServerExecutorTest, IsCalled_send_error_message_OnceIfCannotCreateSubProcess)
-//{
-//	ServerExecutorMock mock;
-//	mock.delegateToFake_create_sub_process();
-//
-//	if (mock.ServerExecutor::initialize())
-//	{
-//		EXPECT_CALL(mock, create_sub_process(_, _, _)).Times(1);
-//		EXPECT_CALL(mock, send_error_message()).Times(1);
-//
-//		mock.ServerExecutor::execute(L"help");
-//	}
-//}
 
 
 TEST(MarshallerTest, GetMode_Valid)

@@ -64,17 +64,20 @@ std::wstring ServerRouter::process_execution(const std::wstring& input)
 		auto command =
 			Marshaller::unpackMessage(Marshaller::ModeIndex::Command, input);
 
-		m_executor->execute(command);
-		auto output = m_executor->getResult();
+		bool is_executed	= m_executor->execute(command);
+		auto output			= m_executor->getResult();
 
-		result =
-			Marshaller::packMessage(Marshaller::ModeIndex::Command, output);
+		Marshaller::ModeIndex mode =
+			(is_executed ?	Marshaller::ModeIndex::Command :
+							Marshaller::ModeIndex::Error);
+
+		result = Marshaller::packMessage(mode, output);
 	}
 	else
 	{
-		result = Marshaller::packMessage(
-			Marshaller::ModeIndex::Error,
-			L"Server is not able to execute commands");
+		result =
+			Marshaller::packMessage(Marshaller::ModeIndex::Error,
+									L"Server is not able to execute commands");
 			
 		std::cerr << "ERROR: cannot initialize executor" << std::endl;
 	}
