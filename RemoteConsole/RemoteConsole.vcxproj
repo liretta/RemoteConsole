@@ -126,13 +126,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base_networker.h" />
+    <ClInclude Include="client_cryptor.h" />
     <ClInclude Include="client_logger.h" />
     <ClInclude Include="client_networker.h" />
+    <ClInclude Include="converting_functions.hpp" />
     <ClInclude Include="error_list.h" />
     <ClInclude Include="dialog_window.h" />
+    <ClInclude Include="icryptor.h" />
     <ClInclude Include="i_logger.h" />
     <ClInclude Include="i_networker.h" />
     <ClInclude Include="ManualTestNetworker.h" />
+    <ClInclude Include="server_cryptor.h" />
     <ClInclude Include="server_executor.h" />
     <ClInclude Include="server_logger.h" />
     <ClInclude Include="server_networker.h" />
