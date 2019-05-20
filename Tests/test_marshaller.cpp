@@ -53,7 +53,7 @@ TEST(MarshallerTest, Pack_ModeAuthorization_Valid)
 		Marshaller::MODE[index] + login + Marshaller::SEPARATOR + password;
 
 	std::wstring output =
-		Marshaller::packAuthorizationData(std::make_pair(login, password));
+		Marshaller::packAuthorizationData(login, password);
 
 	EXPECT_EQ(result, output);
 }
@@ -71,7 +71,7 @@ TEST(MarshallerTest, Pack_ModeAuthorization_Empty)
 	result += Marshaller::SEPARATOR;
 
 	std::wstring output =
-		Marshaller::packAuthorizationData(std::make_pair(login, password));
+		Marshaller::packAuthorizationData(login, password);
 
 	EXPECT_EQ(result, output);
 }
@@ -157,7 +157,7 @@ TEST(MarshallerTest, PackAndUnpack_ModeAuthorization_Valid)
 		password	= L"password";
 
 	std::wstring input =
-		Marshaller::packAuthorizationData(std::make_pair(login, password));
+		Marshaller::packAuthorizationData(login, password);
 
 	auto result = std::make_pair(login, password);
 	auto output = Marshaller::unpackAuthorizationData(input);
@@ -172,7 +172,7 @@ TEST(MarshallerTest, PackAndUnpack_ModeAuthorization_Empty)
 		password	= L"";
 
 	std::wstring input =
-		Marshaller::packAuthorizationData(std::make_pair(login, password));
+		Marshaller::packAuthorizationData(login, password);
 
 	auto result = std::make_pair(login, password);
 	auto output = Marshaller::unpackAuthorizationData(input);
