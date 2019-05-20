@@ -214,7 +214,13 @@ TEST(MarshallerTest, Unpack_ModeCommand_Valid)
 {
 	int index = static_cast<int>(Marshaller::Type::Command);
 
-	std::wstring command = L"dir";
+	std::wstring command =
+        L"For more information on a specific command, type HELP command-name\n"
+        "ASSOC          Displays or modifies file extension associations.\n"
+        "ATTRIB         Displays or changes file attributes.\n"
+        "BREAK          Sets or clears extended CTRL + C checking.\n"
+        "BCDEDIT        Sets properties in boot database to control boot loading.\n"
+        "CACLS          Displays or modifies access control lists(ACLs) of files.";
 
 	std::wstring input =
 		Marshaller::MODE[index] + command;
