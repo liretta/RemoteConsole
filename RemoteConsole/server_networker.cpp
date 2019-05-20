@@ -7,15 +7,13 @@ ServerNetworker::ServerNetworker()
 
 ServerNetworker::~ServerNetworker()
 {
-	closesocket(m_connectSocket);
 	closesocket(m_listenSocket);
-	WSACleanup();
 }
 
-
-/*create listenSocket, connectSocket(for client), bind and start to listen
-*return true if all socket was successfull created, binded and listened
-*/
+/*!
+ * create listenSocket, connectSocket(for client), bind and start to listen
+ * @return true if all socket was successful created, binded and listened
+ */
 bool ServerNetworker::create_socket()
 {
 	bool bResult = true;
@@ -54,15 +52,16 @@ bool ServerNetworker::create_socket()
 	return bResult;
 }
 
-/*accept client socket
-* return true if connection was create successfull
-*/
+/*!
+ * accept client socket
+ * @return true if connection was create successful
+ */
 bool ServerNetworker::create_connection()
 {
 	int result = true;
 	int addrSize = sizeof(m_addr);
-	m_connectSocket = accept(m_listenSocket, (sockaddr*)&m_addr, &addrSize);
-	if (m_connectSocket == INVALID_SOCKET)
+	m_connect_socket = accept(m_listenSocket, (sockaddr*)&m_addr, &addrSize);
+	if (m_connect_socket == INVALID_SOCKET)
 	{
 		result = false;
 		closesocket(m_listenSocket);
@@ -72,10 +71,11 @@ bool ServerNetworker::create_connection()
 	return result;
 }
 
-/*called private function for initialize library, create socket for client and listening
-* create connection
-* if any of this function ended with error - return corresponding error
-*/
+/*! 
+ * called private function for initialize library, create socket for client and listening
+ * create connection
+ * @return corresponding error if any of this function ended with error
+ */
 Error ServerNetworker::init()
 {
 	Error result = OK;

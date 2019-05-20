@@ -1,3 +1,5 @@
+.gitignore
+
 Source.cpp
 RemoteConsole.vcxproj
 RemoteConsole.vcxproj.filters
