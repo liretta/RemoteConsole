@@ -1,20 +1,10 @@
 #include "client_networker.h"
-
-ClientNetworker::ClientNetworker()
-{
-}
-
-ClientNetworker::~ClientNetworker()
-{
-	closesocket(m_connectSocket);
-	WSACleanup();
-}
-
-/*called private function for initialize library, create socket 
-* and create connection
-* if any of this function ended with error - return corresponding error 
-*/
-
+/*!
+ * called private function for initialize library, create socket 
+ * and create connection
+ * @return corresponding error if any of this function ended with error 
+ * @return OK if initialize was successful
+ */
 Error ClientNetworker::init()
 {
 	Error result = OK;
@@ -38,11 +28,10 @@ Error ClientNetworker::init()
 	
 	return result;
 };
-
-
-/*create socket for connection
-* return true if socket was create successfull
-*/
+/*!
+ * create socket for connection
+ * @return true if socket was create successful
+ */
 bool ClientNetworker::create_socket()
 {
 	bool result = false;
@@ -51,8 +40,8 @@ bool ClientNetworker::create_socket()
 	m_addr.sin_port = htons(1111);
 	m_addr.sin_family = AF_INET;
 
-	m_connectSocket = socket(AF_INET, SOCK_STREAM, NULL);
-	if (m_connectSocket != INVALID_SOCKET)
+	m_connect_socket = socket(AF_INET, SOCK_STREAM, NULL);
+	if (m_connect_socket != INVALID_SOCKET)
 	{
 		result = true;
 	}
@@ -61,21 +50,21 @@ bool ClientNetworker::create_socket()
 		result = false;
 		WSACleanup();
 	}
-
 	return result;
 }
 
-/*create connection 
-*return true if connection was create successfull
-*/
+/*!
+ * create connection 
+ * @return true if connection was create successful
+ */
 bool ClientNetworker::create_connection()
 {
 	bool result = false;
-	result = connect(m_connectSocket, (SOCKADDR*)&m_addr, sizeof(m_addr)); //return zero if successful
+	result = connect(m_connect_socket, (SOCKADDR*)&m_addr, sizeof(m_addr)); //return zero if successful
 	if (!result == false)
 	{
-		closesocket(m_connectSocket);
-		m_connectSocket = INVALID_SOCKET;
+		closesocket(m_connect_socket);
+		m_connect_socket = INVALID_SOCKET;
 	}
 	return !result;
 }
