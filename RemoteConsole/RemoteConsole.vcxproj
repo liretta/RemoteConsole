@@ -116,9 +116,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="base_networker.cpp" />
+    <ClCompile Include="client_cryptor.cpp" />
+    <ClCompile Include="client_executor.cpp" />
     <ClCompile Include="client_logger.cpp" />
     <ClCompile Include="client_networker.cpp" />
     <ClCompile Include="CodeStyleExmpl.cpp" />
+    <ClCompile Include="marshaller.cpp" />
     <ClCompile Include="server_executor.cpp" />
     <ClCompile Include="server_logger.cpp" />
     <ClCompile Include="server_networker.cpp" />
@@ -127,6 +130,7 @@
   <ItemGroup>
     <ClInclude Include="base_networker.h" />
     <ClInclude Include="client_cryptor.h" />
+    <ClInclude Include="client_executor.h" />
     <ClInclude Include="client_logger.h" />
     <ClInclude Include="client_networker.h" />
     <ClInclude Include="converting_functions.hpp" />
@@ -136,6 +140,7 @@
     <ClInclude Include="i_logger.h" />
     <ClInclude Include="i_networker.h" />
     <ClInclude Include="ManualTestNetworker.h" />
+    <ClInclude Include="marshaller.h" />
     <ClInclude Include="server_cryptor.h" />
     <ClInclude Include="server_executor.h" />
     <ClInclude Include="server_logger.h" />

@@ -6,11 +6,12 @@
 #include <functional>
 #include <algorithm>
 
-constexpr const char* FILE_USERS_NAME = "user.ini";
+constexpr const char* FILE_USERS_NAME = "users.ini";
 static size_t name_hash(const auth_data &name);
 
 class ServerLogger:public iLogger
 {
+public:
 	ServerLogger(ServerNetworker & networker) : m_networker(networker)
 	{};
 

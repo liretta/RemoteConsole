@@ -7,6 +7,11 @@
 #include "error_list.h"
 #include "server_networker.h"
 #include "client_networker.h"
+#include "client_logger.h"
+#include "server_logger.h"
+#include "client_executor.h"
+#include "server_executor.h"
+
 
 
 void TestNetworkerM()
@@ -24,17 +29,47 @@ void TestNetworkerM()
 		if (er != OK)
 		{
 			PrintError(er);
+			break;
 		}
 		else
 		{
 			std::cout << "Connection created\n";
-
-			bool res = true;
-			do
+			//check login
 			{
-				res = sn.send("test string");
+				bool result = false;
 
-			} while (1);
+				while (!result)
+				{
+					std::string str = sn.receive();
+					std::pair<std::wstring, std::wstring> wlog = Marshaller::unpackAuthorizationData(STRINGtoWSTRING(str));
+					std::pair<std::string, std::string> str_log = std::make_pair(WSTRINGtoSTRING(wlog.first), WSTRINGtoSTRING(wlog.second));
+					
+					ServerLogger slog(sn);
+					result = slog.check_password(str_log, USER);
+					sn.send(WSTRINGtoSTRING(Marshaller::packResult(result)));				
+				}
+
+				while (1)
+				{
+					std::string str = sn.receive();
+					std::wstring w_mess = STRINGtoWSTRING(str);
+					std::wstring comm = Marshaller::unpackMessage(Marshaller::getMode(w_mess), w_mess);
+
+					ServerExecutor s_exc;
+					s_exc.initialize();
+					bool result = s_exc.execute(comm);
+					if (result)
+					{
+						std::wstring result_mess = s_exc.getResult();
+						std::wstring send_mess = Marshaller::packMessage(Marshaller::Type::Command, result_mess);
+						sn.send(WSTRINGtoSTRING(send_mess));
+					}
+					else
+					{
+						sn.send(WSTRINGtoSTRING(Marshaller::packResult(result)));
+					}
+				}
+			}
 		}
 	}
 	break;
@@ -46,16 +81,38 @@ void TestNetworkerM()
 		if (er != OK)
 		{
 			PrintError(er);
+			break;
 		}
 		else
 		{
 			std::cout << "Connection created\n";
-			std::string tmpStr = "test";
-			do
+			std::string log, pas;
+			std::cout << "Login: ";
+			std::cin >> log;
+			std::cout << "Pass: ";
+			std::cin >> pas;
+
+			ClientLogger logger(cn);
+			if (!logger.check_password(std::make_pair(log, pas), USER))
 			{
-				tmpStr = cn.receive();
-				std::cout << tmpStr << std::endl;
-			} while (tmpStr!="test string");
+				std::cout << "Wrong log/pass\n";
+			}
+			else
+			{
+				std::cout << "Auth succeed\n";
+				while (1)
+				{
+					std::cout << std::endl;
+					std::cout << "Enter command: ";
+					std::string comm;
+					std::cin.ignore();
+					std::getline(std::cin, comm);
+					std::cout << std::endl;
+
+					ClientExecutor exc(cn);
+					std::wcout << exc.execute(STRINGtoWSTRING(comm));
+				}
+			}
 		}
 	}
 	break;

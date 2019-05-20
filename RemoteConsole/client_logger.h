@@ -1,5 +1,9 @@
 #pragma once
 #include "i_logger.h"
+#include "marshaller.h"
+#include "client_cryptor.h"
+#include "converting_functions.hpp"
+
 class ClientLogger : public iLogger
 {
 public:

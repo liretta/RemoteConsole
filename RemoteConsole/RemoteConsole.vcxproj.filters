@@ -39,6 +39,15 @@
     <ClCompile Include="server_logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="marshaller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="client_executor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="client_cryptor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base_networker.h">
@@ -84,6 +93,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="server_cryptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="marshaller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="client_executor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
