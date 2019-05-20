@@ -1,3 +1,4 @@
+//temporary function for errors
 #pragma once
 #include <iostream>
 
@@ -32,7 +33,7 @@ static void PrintError(Error er)
 		std::cout << "Error connect with server\n";
 		break;
 	case ERR_SENDING:
-		std::cout << "Error sendind\n";
+		std::cout << "Error sending\n";
 		break;
 	default:
 		std::cout << "Unknown error\n";

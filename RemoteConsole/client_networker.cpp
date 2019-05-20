@@ -1,21 +1,11 @@
 #include "client_networker.h"
-
-ClientNetworker::ClientNetworker()
-{
-}
-
-ClientNetworker::~ClientNetworker()
-{
-	closesocket(m_connectSocket);
-	WSACleanup();
-}
-
-/*called private function for initialize library, create socket 
-* and create connection
-* if any of this function ended with error - return corresponding error 
-*/
-
-Error ClientNetworker::init()
+/*!
+ * called private function for initialize library, create socket 
+ * and create connection
+ * @return corresponding error if any of this function ended with error 
+ * @return OK if initialize was successful
+ */
+Error ClientNetworker::init(const std::string &def_adr)
 {
 	Error result = OK;
 	if (init_library() == false)
@@ -24,7 +14,7 @@ Error ClientNetworker::init()
 		return result;
 	}
 
-	if (create_socket() == false)
+	if (create_socket(def_adr) == false)
 	{
 		result = ERR_CREATE_SOCKET;
 		return result;
@@ -38,21 +28,20 @@ Error ClientNetworker::init()
 	
 	return result;
 };
-
-
-/*create socket for connection
-* return true if socket was create successfull
-*/
-bool ClientNetworker::create_socket()
+/*!
+ * create socket for connection
+ * @return true if socket was create successful
+ */
+bool ClientNetworker::create_socket(const std::string &def_adr)
 {
 	bool result = false;
 	int sizeAddr = sizeof(m_addr);
-	m_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	m_addr.sin_addr.s_addr = inet_addr(def_adr.c_str());
 	m_addr.sin_port = htons(1111);
 	m_addr.sin_family = AF_INET;
 
-	m_connectSocket = socket(AF_INET, SOCK_STREAM, NULL);
-	if (m_connectSocket != INVALID_SOCKET)
+	m_connect_socket = socket(AF_INET, SOCK_STREAM, NULL);
+	if (m_connect_socket != INVALID_SOCKET)
 	{
 		result = true;
 	}
@@ -61,21 +50,16 @@ bool ClientNetworker::create_socket()
 		result = false;
 		WSACleanup();
 	}
-
 	return result;
 }
 
-/*create connection 
-*return true if connection was create successfull
-*/
+/*!
+ * create connection 
+ * @return true if connection was create successful
+ */
 bool ClientNetworker::create_connection()
 {
 	bool result = false;
-	result = connect(m_connectSocket, (SOCKADDR*)&m_addr, sizeof(m_addr)); //return zero if successful
-	if (!result == false)
-	{
-		closesocket(m_connectSocket);
-		m_connectSocket = INVALID_SOCKET;
-	}
+	result = connect(m_connect_socket, (SOCKADDR*)&m_addr, sizeof(m_addr)); //return zero if successful
 	return !result;
 }

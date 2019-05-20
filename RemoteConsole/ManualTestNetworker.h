@@ -1,20 +1,21 @@
+/*!
+ * temp test for checking networker
+ * delete it after create unit-testing
+ */
 #pragma once
 #include <iostream>
 #include "error_list.h"
 #include "server_networker.h"
 #include "client_networker.h"
-/*
-* temp test for checking networker
-* delete it after create unit-testing
-*/
+
 
 void TestNetworkerM()
 {
-	char choise = 'e';
+	char choice = 'e';
 	std::cout << "Please, choice you role: s(server) or c(client):";
-	std::cin >> choise;
+	std::cin >> choice;
 	
-	switch (choise)
+	switch (choice)
 	{
 	case 's':
 	{
