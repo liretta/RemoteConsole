@@ -5,13 +5,15 @@
 class ServerNetworker : public BaseNetworker
 {
 public:
-	ServerNetworker();
+	ServerNetworker(): m_listen_socket(INVALID_SOCKET)
+	{};
+
 	~ServerNetworker();
-	Error init() override;
+	Error init(const std::string &def_adr = "127.0.0.1") override;
 	
 
 private:
-	SOCKET m_listenSocket;
-	bool create_socket() override;//create listenSocket, connectSocket(for client), bind and start to listen
+	SOCKET m_listen_socket;
+	bool create_socket(const std::string &def_adr) override;//create listenSocket, connectSocket(for client), bind and start to listen
 	bool create_connection() override; //accept client socket
 };

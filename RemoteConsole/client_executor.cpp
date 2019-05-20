@@ -1,6 +1,7 @@
+//TODO: add cryptor
 #include "client_executor.h"
 
-ClientExecutor::ClientExecutor(Networker& networker):
+ClientExecutor::ClientExecutor(ClientNetworker& networker):
     m_networker(networker)
 {
 }
