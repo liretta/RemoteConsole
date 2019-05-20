@@ -10,8 +10,8 @@ class Networker
 {
 public:
 
-    bool send(const std::string&);
-    std::string receive();
+    bool send(const std::string&) { return true; }
+    std::string receive() { return std::string(); }
 };
 
 

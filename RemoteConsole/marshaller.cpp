@@ -76,17 +76,11 @@ Marshaller::packAuthorizationData(const std::wstring& login,
 std::wstring Marshaller::unpackMessage(Type mode, const std::wstring& w_line)
 {
     // template: Mmessage
-    std::wstring pattern =
-        MODE[static_cast<int>(mode)] +
-        std::wstring(L"([[:print:]]*)");
-
-    std::wregex     regex(pattern);
-    std::wsmatch    results;
-
     std::wstring message;
-    if (std::regex_search(w_line, results, regex))
+
+    if (w_line[0] == MODE[static_cast<int>(mode)])
     {
-        message = results.str(1);
+        message = std::wstring(w_line, 1, w_line.size() - 1);
     }
 
     return message;
