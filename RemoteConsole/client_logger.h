@@ -11,6 +11,7 @@ public:
 	{};
 
 	bool check_password(auth_data const &log_pair, Access acs) override;
+	bool check_password(const std::string &log, const std::string &pass) override;
 
 private:
 	ClientNetworker &m_networker;

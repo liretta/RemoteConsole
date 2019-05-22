@@ -64,3 +64,24 @@ bool ServerLogger::check_password(std::pair<std::string, std::string> const &log
 
 	return (!(it == user_list.end()));
 }
+
+bool ServerLogger::check_password(const std::string &log, const std::string &pass)
+{
+	auth_data log_pair = std::make_pair(log, pass);
+	Access acs = USER;
+	std::unordered_map<auth_data, int, decltype(&name_hash)> user_list(0, name_hash);
+	if (!load_auth_data_from_file(user_list))
+	{
+		return false;
+	}
+
+	const auto it = std::find_if(user_list.begin(), user_list.end(), [&log_pair, &acs](std::pair<const auth_data, int>& elem)
+	{
+		return (elem.first.first == log_pair.first
+			&& elem.first.second == log_pair.second
+			&& elem.second == acs);
+	});
+
+	return (!(it == user_list.end()));
+
+}

@@ -38,8 +38,7 @@ void TestNetworkerM()
 			{
 				bool result = false;
 
-				while (!result)
-				{
+				
 					std::string str = sn.receive();
 					std::pair<std::wstring, std::wstring> wlog = Marshaller::unpackAuthorizationData(STRINGtoWSTRING(str));
 					std::pair<std::string, std::string> str_log = std::make_pair(WSTRINGtoSTRING(wlog.first), WSTRINGtoSTRING(wlog.second));
@@ -47,7 +46,7 @@ void TestNetworkerM()
 					ServerLogger slog(sn);
 					result = slog.check_password(str_log, USER);
 					sn.send(WSTRINGtoSTRING(Marshaller::packResult(result)));				
-				}
+				
 
 				while (1)
 				{
@@ -105,12 +104,13 @@ void TestNetworkerM()
 					std::cout << std::endl;
 					std::cout << "Enter command: ";
 					std::string comm;
-					std::cin.ignore();
+					std::cin.clear();
 					std::getline(std::cin, comm);
 					std::cout << std::endl;
 
 					ClientExecutor exc(cn);
 					std::wcout << exc.execute(STRINGtoWSTRING(comm));
+					std::cin.clear();
 				}
 			}
 		}

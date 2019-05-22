@@ -13,4 +13,5 @@ class iLogger
 {
 public:
 	virtual bool check_password(auth_data const &log_pair, Access acs) = 0;
+	virtual bool check_password(const std::string &log, const std::string &pass) = 0;
 };

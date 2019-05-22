@@ -24,7 +24,6 @@ bool ServerNetworker::create_socket(const std::string &def_adr)
 	m_listen_socket = socket(m_addr.sin_family, SOCK_STREAM, NULL);
 	if (m_listen_socket == INVALID_SOCKET)
 	{
-		WSACleanup();
 		bResult = false;
 		return bResult;
 	}
