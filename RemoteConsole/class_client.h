@@ -1,3 +1,7 @@
+/* !
+ * united functionality client-side
+ * get opportunity to logIn, Excecut command and encryption message
+ */
 #pragma once
 #include "i_client.h"
 

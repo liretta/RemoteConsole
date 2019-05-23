@@ -1,3 +1,6 @@
+/*! 
+ * base abstract class for networking
+ */
 #pragma once
 #pragma comment (lib, "Ws2_32.lib")
 #include "i_networker.h"
@@ -14,8 +17,8 @@ class BaseNetworker: public INetworker
 public:
 	BaseNetworker();
 	virtual ~BaseNetworker();
-	bool send(const std::string &a_message) override; //send message through connection socket
-	std::string receive() override; //receive message from connection socket
+	bool send(const std::vector<char> &a_message) override; //send message through connection socket
+	bool receive(std::vector<char> &a_message) override; //receive message from connection socket. Save result to a_message
 	virtual Error init(const std::string &def_adr = "127.0.0.1") override = 0;
 	bool shutdownSend() override; //shutdown network object for sending
 	bool shutdownReceive() override; //shutdown network object for receiving

@@ -1,4 +1,6 @@
-//temporary function for errors
+/*!
+ * temporary function for errors
+ */
 #pragma once
 #include <iostream>
 
@@ -11,6 +13,7 @@ enum Error
 	ERR_CONNECT_WITH_SERVER,
 	ERR_SENDING,
 	ERR_CHECKING_LOGIN,
+	ERR_CONNECTION_LOST,
 	ERR_UNKNOWN_ERROR
 };
 
@@ -22,23 +25,27 @@ static void PrintError(Error er)
 	std:: cout << "Operation successful\n";
 	break;
 	case ERR_LIBRARY_INIT:
-		std::cout << "Error initialization library\n";
+		std::cerr << "Error initialization library\n";
 		break;
 	case ERR_CREATE_SOCKET:
-		std::cout << "Error creation socket\n";
+		std::cerr << "Error creation socket\n";
 		break;
 	case ERR_CREATE_CONNECTION:
-		std::cout << "Error create connection\n";
+		std::cerr << "Error create connection\n";
 		break;
 	case ERR_CONNECT_WITH_SERVER:
-		std::cout << "Error connect with server\n";
+		std::cerr << "Error connect with server\n";
 		break;
 	case ERR_SENDING:
-		std::cout << "Error sending\n";
+		std::cerr << "Error sending\n";
 		break;
 	case ERR_CHECKING_LOGIN:
-		std::cout << "Error checking login/password\n";
+		std::cerr << "Error checking login/password\n";
+		break;
+	case ERR_CONNECTION_LOST:
+		std::cerr << "Connection have been lost\n";
+		break;
 	default:
-		std::cout << "Unknown error\n";
+		std::cerr << "Unknown error\n";
 	}
 }

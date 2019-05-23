@@ -14,7 +14,7 @@ public:
 	//virtual std::vector<char> encrypt(std::wstring message);
 	//virtual std::wstring decrypt(std::vector<char> message);
 
-	//std::string encrypt(std::wstring message)=0;
-	//std::wstring decrypt(std::string message)=0;
+	virtual std::vector<char> encrypt (std::wstring message) = 0;
+	virtual std::wstring decrypt(std::vector<char> message) = 0;
 };
 

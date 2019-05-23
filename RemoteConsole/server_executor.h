@@ -1,3 +1,6 @@
+/*! 
+ * execute command in hidden command line 
+ */
 #pragma once
 
 #include <windows.h> 

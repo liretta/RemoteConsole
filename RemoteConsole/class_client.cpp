@@ -1,6 +1,6 @@
 #include "class_client.h"
 
-Client::Client() : m_executor(m_networker), m_logger(m_networker)
+Client::Client() : m_executor(m_networker, m_cryptor), m_logger(m_networker, m_cryptor)
 {}
 
 ClientExecutor& Client::getExecutor() 

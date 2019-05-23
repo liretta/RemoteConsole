@@ -18,7 +18,14 @@ ServerNetworker& Server::getNetworker()
 	return m_networker;
 }
 
-
+/*!
+ * here is an endless loop with creation connection with client, checking his logIn information and data exchange within server and client
+ * work in order:
+ * 1. initialize networker, listen for the client
+ * 2. checking logIn data while it wasn't successfully 
+ * 3. Running an endless loop with data exchange while connection is presents
+ * if connection lost, start all loop again
+ */
 void Server::run()
 {
 	//init networker
@@ -28,73 +35,83 @@ void Server::run()
 	{
 		return;
 	}
-	
 
 	while(1)
 	{
-		bool log_in_result = false;
+		//check logIn data while connection is present and log+pass wasn't connect
+		bool result_by_log_in = false;
 		bool is_connection = true;
 		do 
 		{
-			log_in_result = client_log_in(is_connection);
-		} while (!log_in_result && is_connection);
-		/*while(!log_in_result)
-		{
-			log_in_result = client_log_in();
-		}*/
+			result_by_log_in = client_log_in(is_connection);
+		} while (!result_by_log_in && is_connection);
 
-		
 		while(is_connection)
 		{
-			is_connection = data_exchange();
-			
+			is_connection = data_exchange();	
 		}
 	}
 }
 
-
+/*!
+ * receiving logIn data from client, check it and return result
+ * if it is problem with receiving, change is_connection value
+ * @return true if log+pass is correct
+ * @return false in another case (wrong log/pass, cannot open file with login data or connection was lost)
+ */
 bool Server::client_log_in(bool &is_connection)
 {
 	bool result = false;
 	
-	std::string str = m_networker.receive();
-	if (str == "#Error" or str == "") //here will be checking ERR result. Save it. If trable with connection - again check pass, else - again listen
+	std::vector<char> tmp_vc;
+	result = m_networker.receive(tmp_vc);
+	if (!result) 
 	{
 		is_connection = false;
-		return false;
+		PrintError(ERR_CONNECTION_LOST);
+		return result;
 	}
-	std::pair<std::wstring, std::wstring> wlog = Marshaller::unpackAuthorizationData(STRINGtoWSTRING(str));
+
+	std::pair<std::wstring, std::wstring> wlog = Marshaller::unpackAuthorizationData(m_cryptor.decrypt(tmp_vc));
 	std::pair<std::string, std::string> str_log = std::make_pair(WSTRINGtoSTRING(wlog.first), WSTRINGtoSTRING(wlog.second));
 
-	//ServerLogger slog(m_networker);
 	result = m_logger.check_password(str_log, USER);
-	m_networker.send(WSTRINGtoSTRING(Marshaller::packResult(result)));
+
+	m_networker.send(m_cryptor.encrypt( (Marshaller::packResult(result) ) ));
 
 	return result;
 }
 
+/*!
+ * function for endless exchange data with server and client
+ * decrypt and unpack received data from connection socket, execute command, encrypt and pack result
+ * @return true if receiving/sending was successful
+ * @return false if connection have been lost or was any other error with encryptor or marshaller
+ */
 bool Server::data_exchange()
 {
-	std::string str = m_networker.receive();
-	if (str == "#Error") //here will be checking ERR result. Save it. If trable with connection - again check pass, else - again listen
+	std::vector<char> tmp_vc;
+	bool result = m_networker.receive(tmp_vc);
+	if (!result)
 	{
-		return false;
+		PrintError(ERR_CONNECTION_LOST);
+		return result;
 	}
-	std::wstring w_mess = STRINGtoWSTRING(str);
-	std::wstring comm = Marshaller::unpackMessage(Marshaller::getMode(w_mess), w_mess);
 
-	//ServerExecutor s_exc;
+	std::wstring comm = 
+		Marshaller::unpackMessage(Marshaller::getMode(m_cryptor.decrypt(tmp_vc)), m_cryptor.decrypt(tmp_vc));
+
 	m_executor.initialize();
-	bool result = m_executor.execute(comm);
+	result = m_executor.execute(comm);
 	if (result)
 	{
 		std::wstring result_mess = m_executor.getResult();
 		std::wstring send_mess = Marshaller::packMessage(Marshaller::Type::Command, result_mess);
-		m_networker.send(WSTRINGtoSTRING(send_mess));
+		m_networker.send(m_cryptor.encrypt(send_mess));
 	}
 	else
 	{
-		m_networker.send(WSTRINGtoSTRING(Marshaller::packResult(result)));
+		m_networker.send(m_cryptor.encrypt(Marshaller::packResult(result)));
 	}
 	return true;
 }

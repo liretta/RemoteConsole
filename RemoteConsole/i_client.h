@@ -1,3 +1,6 @@
+/*! 
+ * interface class for all client-side functionality
+ */
 #pragma once
 #include "client_cryptor.h"
 #include "client_networker.h"

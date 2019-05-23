@@ -1,3 +1,6 @@
+/*!
+ * interface class for all functionality in the server side
+ */
 #pragma once
 #include "server_cryptor.h"
 #include "server_executor.h"

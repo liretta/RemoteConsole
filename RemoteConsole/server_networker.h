@@ -1,3 +1,6 @@
+/*! 
+ * create connecting with clients
+ */
 #pragma once
 #include "base_networker.h"
 //TODO: do it multi-thread - create vector with sockets and create new thread when new client is connecting

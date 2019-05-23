@@ -1,3 +1,6 @@
+/*!
+ * class for checking logIn data from external file
+ */
 #pragma once
 #include "i_logger.h"
 #include <fstream>

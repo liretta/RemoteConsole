@@ -1,5 +1,10 @@
+/*! 
+ *united functionality server-side
+ * all work are doing by method run() in endless cycle
+ */
 #pragma once
 #include "i_server.h"
+
 
 
 class Server: public IServer
@@ -20,6 +25,5 @@ private:
 	ServerExecutor m_executor;
 	ServerCryptor m_cryptor;
 	ServerLogger m_logger;
-
 };
 

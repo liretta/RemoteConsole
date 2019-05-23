@@ -28,101 +28,95 @@ bool BaseNetworker::init_library()
 }
 
 /*!
- * sending string through connection socket
- * first of all send the size of string-message
+ * sending encrypting data through connection socket
+ * first of all send the size of message
  * size of this sending message is default = sizeofint
- * then send string message
+ * then send message
  * @return true if sending was successful
+ * @return false if not all data was send or connection have been lost
  */
-bool BaseNetworker::send(const std::string &a_message)
+bool BaseNetworker::send(const std::vector<char> &a_message)
 {
-	int result = SOCKET_ERROR;
-	union
-	{
-		char c_size[4];
-		int i_size;
-	} u_message_size;
-	u_message_size.i_size = a_message.size();
+	int result = SOCKET_ERROR, 
+		m_size = a_message.size(), 
+		int_size = sizeof(int),
+		temp_byte_send = 0, //stores temporarily the number of bytes transferred and the value returned by the winsock's function "send"
+		byte_send = 0;
 
-	//send size of message
-	result = ::send(m_connect_socket, u_message_size.c_size, sizeof(u_message_size), 0);
-	if (result == SOCKET_ERROR)
+	//try to send size of message 
+	while(byte_send<int_size)
 	{
-		std::cout << WSAGetLastError() << std::endl;
-		return false;
-	}
-	else
-	{
-		//send message string
-		result = ::send(m_connect_socket, a_message.c_str(), u_message_size.i_size, 0);
+		temp_byte_send = ::send(m_connect_socket, (char*)&m_size+byte_send, int_size-byte_send, 0);
+		if (temp_byte_send == SOCKET_ERROR)
+		{
+			std::cerr << "Error sending data " << WSAGetLastError() << std::endl;
+			return false;
+		}
+		byte_send += temp_byte_send;
 	}
 
-	if (result == SOCKET_ERROR)
+	//try to send message
+	byte_send = 0, temp_byte_send = 0;
+	while (byte_send < m_size)
 	{
-		return false;
+		temp_byte_send = ::send(m_connect_socket, &a_message[0]+byte_send, m_size-byte_send, 0);
+		if (temp_byte_send == SOCKET_ERROR)
+		{
+			std::cerr << "Error sending data " << WSAGetLastError() << std::endl;
+			return false;
+		}
+		byte_send += temp_byte_send;
 	}
-	
 	return true;
 }
 
 /*!
- * receive string from connection socket
- * first of all receiving the size of string-message
- * size of this sending message is default = sizeofint
+ * receive encrypted data from connection socket
+ * first of all receiving the size of the message
+ * size of this first receiving message is default = sizeofint
  * then receive message
- * @return received string if sending was successful
- * @return string "#Error" in another case
+ * save receiving message in a_message by reference
+ * @return true if receiving was successful
+ * @return false if not all data was receiving or connection have been lost
+ * closed connection socket if connection have been lost
  */
-std::string BaseNetworker::receive()
+bool BaseNetworker::receive(std::vector<char>& a_message)
 {
-	std::string str_buff;
-	union
-	{
-		char c_size[4];
-		int i_size;
-	} u_message_size;
-	u_message_size.i_size = 0;
-	
+	int m_size = 0, byte_received = 0, temp_byte_received = 0;
+
 	//receive message size
-	int result = recv(m_connect_socket, u_message_size.c_size, sizeof(u_message_size), 0);
-
-	if (result == SOCKET_ERROR || result == 0)
+	while(byte_received < sizeof(int))
 	{
-		str_buff = "#Error";
-		closesocket(m_connect_socket); 
-		create_connection();
-		return str_buff;
-	}
-	else
-	{
-		//receive string-message
-		std::vector<char> v_buff(u_message_size.i_size);
-		int byte_received = 0, temp_byte_received = 0;
-
-		//read message in parts
-		while (byte_received < u_message_size.i_size)
+		temp_byte_received = recv(m_connect_socket, (char*)&m_size+byte_received, sizeof(int)-byte_received, 0);
+		if (temp_byte_received == SOCKET_ERROR || temp_byte_received == 0)
 		{
-			temp_byte_received = recv(m_connect_socket, &v_buff[0]+byte_received, u_message_size.i_size - byte_received, 0);
-			if (temp_byte_received == SOCKET_ERROR || temp_byte_received ==0)
-			{
-				closesocket(m_connect_socket);
-				create_connection();
-				str_buff = "#Error";
-				return str_buff;
-			}
-			else
-			{
-				byte_received += temp_byte_received;
-			}	
+			std::cerr << "Error receiving data " << WSAGetLastError() << std::endl;
+			closesocket(m_connect_socket);
+			create_connection();
+			return false;
 		}
 
-		if (byte_received == u_message_size.i_size)
-		{
-			str_buff.append(v_buff.cbegin(), v_buff.cbegin() + u_message_size.i_size);
-		}
-
-		return str_buff;
+		byte_received += temp_byte_received;
 	}
+	
+	//receive string-message
+	a_message.resize(m_size);
+	byte_received = 0, temp_byte_received = 0;
+	
+	//read message in parts
+	while (byte_received < m_size)
+	{
+		temp_byte_received = recv(m_connect_socket, &a_message[0]+byte_received, m_size-byte_received, 0);
+		if (temp_byte_received == SOCKET_ERROR || temp_byte_received == 0)
+		{
+			closesocket(m_connect_socket);
+			create_connection();
+			return false;
+		}
+		
+		byte_received += temp_byte_received;
+	}
+	return true;
 }
 
 

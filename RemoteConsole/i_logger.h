@@ -1,3 +1,6 @@
+/*! 
+ * interface class for logger 
+ */
 #pragma once
 #include <fstream>
 #include <unordered_map>

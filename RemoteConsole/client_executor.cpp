@@ -1,8 +1,7 @@
-//TODO: add cryptor
 #include "client_executor.h"
 
-ClientExecutor::ClientExecutor(ClientNetworker& networker):
-    m_networker(networker)
+ClientExecutor::ClientExecutor(ClientNetworker& networker, ClientCryptor& cryptor):
+    m_networker(networker), m_cryptor(cryptor)
 {
 }
 
@@ -13,33 +12,37 @@ std::wstring ClientExecutor::execute(const std::wstring& w_command)
     std::wstring w_message =
         Marshaller::packMessage(Marshaller::Type::Command, w_command);
 
-    if (m_networker.send(WSTRINGtoSTRING(w_message)))
+    if (m_networker.send(m_cryptor.encrypt(w_message)))
     {
-        std::string result = m_networker.receive();
-        w_message = STRINGtoWSTRING(result);
+		std::vector<char> vc;
+		bool result = m_networker.receive(vc);
+		if (result)
+		{
+			std::wstring w_message = m_cryptor.decrypt(vc);
 
-        switch (Marshaller::getMode(w_message))
-        {
-        case Marshaller::Type::Command:
-            {
-                execution_result =
-                    Marshaller::unpackMessage(Marshaller::Type::Command,
-                                              w_message);
-                break;
-            }
-        case Marshaller::Type::Error:
-            {
-                execution_result =
-                    Marshaller::unpackMessage(Marshaller::Type::Error,
-                                              w_message);
-                break;
-            }
-        default:
-            {
-                std::wcerr << L"ERROR: unable to unpack " <<
-                    w_message << std::endl;
-            }
-        }
+			switch (Marshaller::getMode(w_message))
+			{
+			case Marshaller::Type::Command:
+			{
+				execution_result =
+					Marshaller::unpackMessage(Marshaller::Type::Command,
+						w_message);
+				break;
+			}
+			case Marshaller::Type::Error:
+			{
+				execution_result =
+					Marshaller::unpackMessage(Marshaller::Type::Error,
+						w_message);
+				break;
+			}
+			default:
+			{
+				std::wcerr << L"ERROR: unable to unpack " <<
+					w_message << std::endl;
+			}
+			}
+		}
     }
     else
     {

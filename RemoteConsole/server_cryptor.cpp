@@ -1,6 +1,6 @@
-#include "client_cryptor.h"
+#include "server_cryptor.h"
 
-std::vector<char> ClientCryptor::encrypt(std::wstring message)
+std::vector<char> ServerCryptor::encrypt(std::wstring message)
 {
 	//TEST CASE!! IT WILL BE CHANGED!!!
 	std::string temp_str = (WSTRINGtoSTRING(message));
@@ -9,9 +9,9 @@ std::vector<char> ClientCryptor::encrypt(std::wstring message)
 	return vc;
 }
 
-std::wstring ClientCryptor::decrypt(std::vector<char> message)
+std::wstring ServerCryptor::decrypt(std::vector<char> message)
 {
 	//TEST CASE!! IT WILL BE CHANGED!!!
-	std::string temp_str (message.begin(), message.end());
+	std::string temp_str(message.begin(), message.end());
 	return (STRINGtoWSTRING(temp_str));
 }

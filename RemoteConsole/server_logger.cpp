@@ -43,6 +43,7 @@ bool ServerLogger::load_auth_data_from_file(std::unordered_map<auth_data, int, d
 
 /*!
  * check sending data with data from file
+ * get pair log+pass and kind of access
  * @return true if there are such login, password and access in file 
  * @return false if there isn't such login, or password/access for this login isn't appropriate
  */
@@ -65,6 +66,12 @@ bool ServerLogger::check_password(std::pair<std::string, std::string> const &log
 	return (!(it == user_list.end()));
 }
 
+/*!
+ * check sending data with data from file
+ * get pair string log+pass
+ * @return true if there are such login, password and access in file
+ * @return false if there isn't such login, or password/access for this login isn't appropriate
+ */
 bool ServerLogger::check_password(const std::string &log, const std::string &pass)
 {
 	auth_data log_pair = std::make_pair(log, pass);

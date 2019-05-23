@@ -1,3 +1,6 @@
+/*! common function 
+ *
+ */
 #pragma once
 
 #include <string>
