@@ -12,7 +12,8 @@
 #include "server_logger.h"
 #include "client_executor.h"
 #include "server_executor.h"
-
+#include "class_server.h"
+#include "class_client.h"
 
 
 void TestNetworkerM()
@@ -140,5 +141,71 @@ void TestNetworkerM()
 	default:
 		std::cout << "Wrong role\n";
 		break;
+	}
+}
+
+void TestClassServer()
+{
+	std::wcout.imbue(std::locale("rus_rus.866"));
+	std::wcin.imbue(std::locale("rus_rus.866"));
+
+	char choice = 'e';
+	std::cout << "Please, choice you role: s(server) or c(client):";
+	std::cin >> choice;
+
+	switch (choice)
+	{
+	case 's':
+		{
+		Server sv;
+		sv.run();
+		}
+		break;
+	case 'c':
+		{
+		Client cl;
+			ClientNetworker &cn = cl.getNetworker();
+			Error er = cn.init();
+			if (er != OK)
+			{
+				PrintError(er);
+				break;
+			}
+			else
+			{
+				std::cout << "Connection created\n";
+				std::string log, pas;
+				std::cout << "Login: ";
+				std::cin >> log;
+				std::cout << "Pass: ";
+				std::cin >> pas;
+
+				ClientLogger &logger = cl.getLogger();
+				if (!logger.check_password(std::make_pair(log, pas), USER))
+				{
+					std::cout << "Wrong log/pass\n";
+				}
+				else
+				{
+					std::cout << "Auth succeed\n";
+					while (1)
+					{
+						std::cin.clear();
+						std::cin.ignore();
+						std::cout << std::endl;
+						std::cout << "Enter command: ";
+						std::string comm;
+						std::getline(std::cin, comm);
+						std::cout << std::endl;
+						//std::cin.clear();
+						if (comm == "exit")
+							break;
+						ClientExecutor exc(cn);
+						std::wstring to_show = exc.execute(STRINGtoWSTRING(comm));
+						std::wcout << to_show << std::endl;
+					}
+				}
+			}
+		}
 	}
 }

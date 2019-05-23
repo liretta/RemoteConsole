@@ -5,16 +5,11 @@
 #include "server_networker.h"
 #include "marshaller.h"
 
-class ServerCryptor;
-class ServerExecutor;
-class ServerLogger;
-class ServerNetworker;
-
 class IServer
 {
 public:
 	virtual ServerExecutor& getExecutor() = 0;
 	virtual ServerLogger& getLogger() = 0;
 	virtual ServerNetworker& getNetworker() = 0;
-	virtual void Run() = 0;
+	virtual void run() = 0;
 };

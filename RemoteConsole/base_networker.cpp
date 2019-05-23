@@ -48,6 +48,7 @@ bool BaseNetworker::send(const std::string &a_message)
 	result = ::send(m_connect_socket, u_message_size.c_size, sizeof(u_message_size), 0);
 	if (result == SOCKET_ERROR)
 	{
+		std::cout << WSAGetLastError() << std::endl;
 		return false;
 	}
 	else
@@ -85,10 +86,10 @@ std::string BaseNetworker::receive()
 	//receive message size
 	int result = recv(m_connect_socket, u_message_size.c_size, sizeof(u_message_size), 0);
 
-	if (result == SOCKET_ERROR)
+	if (result == SOCKET_ERROR || result == 0)
 	{
 		str_buff = "#Error";
-		closesocket(m_connect_socket);
+		closesocket(m_connect_socket); 
 		create_connection();
 		return str_buff;
 	}
@@ -102,8 +103,10 @@ std::string BaseNetworker::receive()
 		while (byte_received < u_message_size.i_size)
 		{
 			temp_byte_received = recv(m_connect_socket, &v_buff[0]+byte_received, u_message_size.i_size - byte_received, 0);
-			if (temp_byte_received == SOCKET_ERROR)
+			if (temp_byte_received == SOCKET_ERROR || temp_byte_received ==0)
 			{
+				closesocket(m_connect_socket);
+				create_connection();
 				str_buff = "#Error";
 				return str_buff;
 			}

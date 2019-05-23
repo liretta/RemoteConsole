@@ -1,16 +1,20 @@
 #pragma once
 #include "i_server.h"
 
+
 class Server: public IServer
 {
 public:
+	Server();
+	~Server() = default;
 	ServerExecutor& getExecutor() override;
 	ServerLogger& getLogger() override;
 	ServerNetworker& getNetworker() override;
-	void Run() override;
+	void run() override;
 
 private:
-	bool client_log_in();
+	bool client_log_in(bool &is_connection);
+	bool data_exchange();
 
 	ServerNetworker m_networker;
 	ServerExecutor m_executor;

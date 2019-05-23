@@ -8,7 +8,7 @@ public:
 	ClientLogger& getLogger()  override;
 	ClientNetworker& getNetworker()  override;
 	Client();
-	~Client();
+	~Client() = default;
 
 private:
 	ClientNetworker m_networker;

@@ -10,6 +10,7 @@ enum Error
 	ERR_CREATE_CONNECTION,
 	ERR_CONNECT_WITH_SERVER,
 	ERR_SENDING,
+	ERR_CHECKING_LOGIN,
 	ERR_UNKNOWN_ERROR
 };
 
@@ -35,6 +36,8 @@ static void PrintError(Error er)
 	case ERR_SENDING:
 		std::cout << "Error sending\n";
 		break;
+	case ERR_CHECKING_LOGIN:
+		std::cout << "Error checking login/password\n";
 	default:
 		std::cout << "Unknown error\n";
 	}

@@ -8,8 +8,8 @@ class ServerCryptor : public ICryptor
 	//virtual void setKey(std::wstring) = 0;
 	//std::vector<char> encrypt(std::wstring message) override;
 	//std::wstring decrypt(std::vector<char> message) override;
-	static std::string encrypt(std::wstring message);
-	static std::wstring decrypt(std::string message);
+	//static std::string encrypt(std::wstring message);
+	//static std::wstring decrypt(std::string message);
 };
 
 //std::vector<char> ClientCryptor::encrypt(std::wstring message)
@@ -37,15 +37,15 @@ class ServerCryptor : public ICryptor
 //}
 
 
-std::string ServerCryptor::encrypt(std::wstring message)
-{
-	//TEST CASE!! CHANGE IT!!!
-	return (WSTRINGtoSTRING(message));
-
-
-}
-
-std::wstring ServerCryptor::decrypt(std::string message)
-{
-	return (STRINGtoWSTRING(message));
-}
+//std::string ServerCryptor::encrypt(std::wstring message)
+//{
+//	TEST CASE!! CHANGE IT!!!
+//	return (WSTRINGtoSTRING(message));
+//
+//
+//}
+//
+//std::wstring ServerCryptor::decrypt(std::string message)
+//{
+//	return (STRINGtoWSTRING(message));
+//}

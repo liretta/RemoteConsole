@@ -1,5 +1,8 @@
 #include "class_client.h"
 
+Client::Client() : m_executor(m_networker), m_logger(m_networker)
+{}
+
 ClientExecutor& Client::getExecutor() 
 {
 	return m_executor;
