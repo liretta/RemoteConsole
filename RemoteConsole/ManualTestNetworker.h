@@ -4,6 +4,7 @@
  */
 #pragma once
 #include <iostream>
+#include <locale>
 #include "error_list.h"
 #include "server_networker.h"
 #include "client_networker.h"
@@ -16,10 +17,13 @@
 
 void TestNetworkerM()
 {
+	std::wcout.imbue(std::locale("rus_rus.866"));
+	std::wcin.imbue(std::locale("rus_rus.866"));
+
 	char choice = 'e';
 	std::cout << "Please, choice you role: s(server) or c(client):";
 	std::cin >> choice;
-	
+
 	switch (choice)
 	{
 	case 's':
@@ -36,37 +40,50 @@ void TestNetworkerM()
 			std::cout << "Connection created\n";
 			//check login
 			{
-				bool result = false;
-
-				while (!result)
-				{
-					std::string str = sn.receive();
-					std::pair<std::wstring, std::wstring> wlog = Marshaller::unpackAuthorizationData(STRINGtoWSTRING(str));
-					std::pair<std::string, std::string> str_log = std::make_pair(WSTRINGtoSTRING(wlog.first), WSTRINGtoSTRING(wlog.second));
-					
-					ServerLogger slog(sn);
-					result = slog.check_password(str_log, USER);
-					sn.send(WSTRINGtoSTRING(Marshaller::packResult(result)));				
-				}
-
 				while (1)
 				{
-					std::string str = sn.receive();
-					std::wstring w_mess = STRINGtoWSTRING(str);
-					std::wstring comm = Marshaller::unpackMessage(Marshaller::getMode(w_mess), w_mess);
+					bool result = false;
 
-					ServerExecutor s_exc;
-					s_exc.initialize();
-					bool result = s_exc.execute(comm);
-					if (result)
+					while (!result)
 					{
-						std::wstring result_mess = s_exc.getResult();
-						std::wstring send_mess = Marshaller::packMessage(Marshaller::Type::Command, result_mess);
-						sn.send(WSTRINGtoSTRING(send_mess));
-					}
-					else
-					{
+						std::string str = sn.receive();
+						if (str == "#Error")
+						{
+							continue;
+						}
+						std::pair<std::wstring, std::wstring> wlog = Marshaller::unpackAuthorizationData(STRINGtoWSTRING(str));
+						std::pair<std::string, std::string> str_log = std::make_pair(WSTRINGtoSTRING(wlog.first), WSTRINGtoSTRING(wlog.second));
+
+						ServerLogger slog(sn);
+						result = slog.check_password(str_log, USER);
 						sn.send(WSTRINGtoSTRING(Marshaller::packResult(result)));
+					}
+
+					bool is_connect = true;
+					while (is_connect)
+					{
+						std::string str = sn.receive();
+						if (str == "#Error") //here will be checking ERR result. Save it. If trable with connection - again check pass, else - again listen
+						{
+							is_connect = false;
+							continue;
+						}
+						std::wstring w_mess = STRINGtoWSTRING(str);
+						std::wstring comm = Marshaller::unpackMessage(Marshaller::getMode(w_mess), w_mess);
+
+						ServerExecutor s_exc;
+						s_exc.initialize();
+						bool result = s_exc.execute(comm);
+						if (result)
+						{
+							std::wstring result_mess = s_exc.getResult();
+							std::wstring send_mess = Marshaller::packMessage(Marshaller::Type::Command, result_mess);
+							sn.send(WSTRINGtoSTRING(send_mess));
+						}
+						else
+						{
+							sn.send(WSTRINGtoSTRING(Marshaller::packResult(result)));
+						}
 					}
 				}
 			}
@@ -102,15 +119,19 @@ void TestNetworkerM()
 				std::cout << "Auth succeed\n";
 				while (1)
 				{
+					std::cin.clear();
+					std::cin.ignore();
 					std::cout << std::endl;
 					std::cout << "Enter command: ";
 					std::string comm;
-					std::cin.ignore();
 					std::getline(std::cin, comm);
 					std::cout << std::endl;
-
+					//std::cin.clear();
+					if (comm == "exit")
+						break;
 					ClientExecutor exc(cn);
-					std::wcout << exc.execute(STRINGtoWSTRING(comm));
+					std::wstring to_show = exc.execute(STRINGtoWSTRING(comm));
+					std::wcout << to_show << std::endl;
 				}
 			}
 		}
