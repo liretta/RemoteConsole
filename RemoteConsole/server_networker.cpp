@@ -51,11 +51,16 @@ bool ServerNetworker::create_socket(const std::string &def_adr)
  */
 bool ServerNetworker::create_connection()
 {
+	if (m_listen_socket != INVALID_SOCKET)
+	{
+		closesocket(m_connect_socket);
+	}
 	int result = true;
 	int addrSize = sizeof(m_addr);
 	m_connect_socket = accept(m_listen_socket, (sockaddr*)&m_addr, &addrSize);
 	if (m_connect_socket == INVALID_SOCKET)
 	{
+		std::cout << WSAGetLastError() << std::endl;
 		result = false;
 	}
 	return result;

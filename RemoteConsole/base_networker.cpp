@@ -88,6 +88,8 @@ std::string BaseNetworker::receive()
 	if (result == SOCKET_ERROR)
 	{
 		str_buff = "#Error";
+		closesocket(m_connect_socket);
+		create_connection();
 		return str_buff;
 	}
 	else
