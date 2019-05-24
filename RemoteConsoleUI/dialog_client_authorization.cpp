@@ -1,4 +1,5 @@
 #include "dialog_client_authorization.h"
+#include "../RemoteConsole/class_client.h"
 
 #include <QLineEdit>
 #include <QLabel>
@@ -61,7 +62,11 @@ void DialogClientAuthorization::initialize_window()
 
 void DialogClientAuthorization::signin()
 {
-    bool is_authorized = true;
+    std::string
+        login = m_line_login->text().toStdString(),
+        password = m_line_password->text().toStdString();
+
+    bool is_authorized = m_client.getLogger().check_password(login, password);
 
     if (!is_authorized)
     {

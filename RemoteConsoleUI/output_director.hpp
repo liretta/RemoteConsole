@@ -1,6 +1,3 @@
-#ifndef OUTPUT_DIRECTOR_H
-#define OUTPUT_DIRECTOR_H
-
 #ifndef QDEBUGSTREAM_H
 #define QDEBUGSTREAM_H
 
@@ -9,21 +6,22 @@
 #include <string>
 #include <QPlainTextEdit>
 
-class OutputStream : public std::basic_streambuf<char>
+class WOutputStream : public std::basic_streambuf<wchar_t>
 {
 public:
-    OutputStream(std::ostream &stream, QPlainTextEdit* text_edit)
+    WOutputStream(std::wostream &stream, QPlainTextEdit* text_edit)
         : m_stream(stream)
     {
         m_log_window = text_edit;
         m_old_buf = stream.rdbuf();
         stream.rdbuf(this);
     }
-    ~OutputStream()
+    ~WOutputStream()
     {
         // output anything that is left
         if (!m_string.empty())
-            m_log_window->appendPlainText(m_string.c_str());
+            m_log_window->appendPlainText(
+                QString::fromWCharArray(m_string.c_str()));
 
         m_stream.rdbuf(m_old_buf);
     }
@@ -33,7 +31,8 @@ protected:
     {
         if (v == '\n')
         {
-            m_log_window->appendPlainText(m_string.c_str());
+            m_log_window->appendPlainText(
+                QString::fromWCharArray(m_string.c_str()));
             m_string.erase(m_string.begin(), m_string.end());
         }
         else
@@ -42,18 +41,19 @@ protected:
         return v;
     }
 
-    virtual std::streamsize xsputn(const char *p, std::streamsize n)
+    virtual std::streamsize xsputn(const wchar_t *p, std::streamsize n)
     {
         m_string.append(p, p + n);
 
         int pos = 0;
-        while (pos != std::string::npos)
+        while (pos != std::wstring::npos)
         {
             pos = m_string.find('\n');
-            if (pos != std::string::npos)
+            if (pos != std::wstring::npos)
             {
-                std::string tmp(m_string.begin(), m_string.begin() + pos);
-                m_log_window->appendPlainText(tmp.c_str());
+                std::wstring tmp(m_string.begin(), m_string.begin() + pos - 1);
+                m_log_window->appendPlainText(
+                    QString::fromWCharArray(tmp.c_str()));
                 m_string.erase(m_string.begin(), m_string.begin() + pos + 1);
             }
         }
@@ -62,14 +62,12 @@ protected:
     }
 
 private:
-    std::ostream&   m_stream;
-    std::streambuf* m_old_buf;
-    std::string     m_string;
+    std::wostream&   m_stream;
+    std::wstreambuf* m_old_buf;
+    std::wstring     m_string;
 
 
     QPlainTextEdit* m_log_window;
 };
 
 #endif
-
-#endif // OUTPUT_DIRECTOR_H

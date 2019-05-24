@@ -1,10 +1,9 @@
 #include "main_client.h"
-#include "stub_client.h"
+#include "../RemoteConsole/class_client.h"
 
 #include <QPushButton>
 #include <QLabel>
 #include <QLayout>
-#include <QTextEdit>
 #include <QLineEdit>
 
 MainClientWindow::MainClientWindow(Client& client, QWidget *parent) :
@@ -17,8 +16,8 @@ MainClientWindow::MainClientWindow(Client& client, QWidget *parent) :
     m_label_output(new QLabel("Output", this)),
     m_label_errors(new QLabel("Errors", this)),
     m_client(client),
-    m_stream_output(std::cout, m_text_output),
-    m_stream_errors(std::cerr, m_text_errors)
+    m_stream_output(std::wcout, m_text_output),
+    m_stream_errors(std::wcerr, m_text_errors)
 {
     initialize_window();
 }
@@ -34,6 +33,12 @@ void MainClientWindow::initialize_window()
 
     m_text_output->setReadOnly(true);
     m_text_errors->setReadOnly(true);
+
+    QFont font("unexistent");
+    font.setStyleHint(QFont::Monospace);
+
+    m_text_output->setFont(font);
+    m_text_errors->setFont(font);
 
     connect(m_button_execute, SIGNAL(clicked()), this, SLOT(execute()));
 
@@ -61,5 +66,7 @@ void MainClientWindow::initialize_window()
 
 void MainClientWindow::execute()
 {
-    m_client.execute();
+    std::wstring command = m_line_command->text().toStdWString();
+    
+    std::wcout << m_client.getExecutor().execute(command);
 }

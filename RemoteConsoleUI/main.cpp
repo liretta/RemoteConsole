@@ -3,7 +3,7 @@
 #include "dialog_adress.h"
 #include "main_server.h"
 #include "main_client.h"
-#include "stub_client.h"
+#include "../RemoteConsole/class_client.h"
 
 #include <QApplication>
 #include <QtDebug>
@@ -77,6 +77,7 @@ int main(int argc, char *argv[])
     {
         auto* main_server = new MainServerWindow;
         main_server->show();
+        main_server->run();
         is_executable = true;
     }
 

@@ -37,7 +37,7 @@ private:
 
     Client& m_client;
 
-    OutputStream
+    WOutputStream
         m_stream_output,
         m_stream_errors;
 

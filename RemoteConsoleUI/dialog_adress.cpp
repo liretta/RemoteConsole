@@ -1,5 +1,5 @@
 #include "dialog_adress.h"
-#include "stub_client.h"
+#include "../RemoteConsole/class_client.h"
 
 #include <QPushButton>
 #include <QLabel>
@@ -32,6 +32,7 @@ void DialogAdress::initialize_window()
     QRegExp re("^\\d{1,3}(\\.\\d{1,3}){3}$");
     QRegExpValidator *validator = new QRegExpValidator(re, this);
     m_line_adress->setValidator(validator);
+    m_line_adress->setText("127.0.0.1");
 
     auto* layout_main = new QHBoxLayout;
 
@@ -45,9 +46,10 @@ void DialogAdress::initialize_window()
 
 void DialogAdress::try_connect()
 {
-    Client::Error error = m_client.getNetworker().init();
+    std::string adress = m_line_adress->text().toStdString();
+    Error error = m_client.getNetworker().init(adress);
 
-    if (error == Client::Error::OK)
+    if (error == Error::OK)
     {
         accept();
     }

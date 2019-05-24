@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include "output_director.hpp"
 
+#include "../RemoteConsole/class_server.h"
+
 class QPushButton;
 class QLabel;
 
@@ -15,6 +17,7 @@ class MainServerWindow : public QMainWindow
 
 public:
     MainServerWindow(QWidget *parent = nullptr);
+    void run();
 
 private:
 
@@ -26,9 +29,11 @@ private:
         *m_label_commands,
         *m_label_errors;
 
-    OutputStream
+    WOutputStream
         m_stream_output,
         m_stream_errors;
+
+    Server m_server;
 
     void initialize_window();
 };

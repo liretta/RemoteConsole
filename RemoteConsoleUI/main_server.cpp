@@ -10,10 +10,15 @@ MainServerWindow::MainServerWindow(QWidget *parent) :
     m_text_errors(new QPlainTextEdit("", this)),
     m_label_commands(new QLabel("Commands", this)),
     m_label_errors(new QLabel("Errors", this)),
-    m_stream_output(std::cout, m_text_commands),
-    m_stream_errors(std::cerr, m_text_errors)
+    m_stream_output(std::wcout, m_text_commands),
+    m_stream_errors(std::wcerr, m_text_errors)
 {
     initialize_window();
+}
+
+void MainServerWindow::run()
+{
+    m_server.run();
 }
 
 void MainServerWindow::initialize_window()
@@ -27,6 +32,12 @@ void MainServerWindow::initialize_window()
 
     m_text_commands->setReadOnly(true);
     m_text_errors->setReadOnly(true);
+
+    QFont font("unexistent");
+    font.setStyleHint(QFont::Monospace);
+
+    m_text_commands->setFont(font);
+    m_text_errors->setFont(font);
 
     QWidget * window = new QWidget;
 
