@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QLayout>
 #include <QMessageBox>
+#include <QRegExpValidator>
 
 DialogAdress::DialogAdress(Client& client, QWidget *parent) :
     QDialog (parent),
@@ -28,6 +29,9 @@ void DialogAdress::initialize_window()
     connect(m_button_connect, SIGNAL(clicked()), this, SLOT(try_connect()));
     connect(m_button_back, SIGNAL(clicked()), this, SLOT(reject()));
 
+    QRegExp re("^\\d{1,3}(\\.\\d{1,3}){3}$");
+    QRegExpValidator *validator = new QRegExpValidator(re, this);
+    m_line_adress->setValidator(validator);
 
     auto* layout_main = new QHBoxLayout;
 

@@ -3,7 +3,6 @@
 #include "dialog_adress.h"
 #include "main_server.h"
 #include "main_client.h"
-
 #include "stub_client.h"
 
 #include <QApplication>

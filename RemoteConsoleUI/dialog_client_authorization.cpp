@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QLayout>
 #include <QMessageBox>
+#include <QRegExpValidator>
 
 DialogClientAuthorization::DialogClientAuthorization(Client& client, QWidget *parent) :
     QDialog (parent),
@@ -31,6 +32,11 @@ void DialogClientAuthorization::initialize_window()
 
     connect(m_button_signin, SIGNAL(clicked()), this, SLOT(signin()));
     connect(m_button_cancel, SIGNAL(clicked()), this, SLOT(cancel()));
+
+    QRegExp re("^[0-9a-zA-Z]{1,45}$");
+    QRegExpValidator *validator = new QRegExpValidator(re, this);
+    m_line_login->setValidator(validator);
+    m_line_password->setValidator(validator);
 
     auto* layout_main = new QVBoxLayout;
 
