@@ -6,8 +6,8 @@
 #include <fstream>
 #include <iphlpapi.h>
 
+class Server;
 #pragma comment (lib, "IPHLPAPI.lib")
-
 //TODO: do it multi-thread - create vector with sockets and create new thread when new client is connecting
 
 class ServerNetworker : public BaseNetworker
@@ -18,7 +18,7 @@ public:
 
 	~ServerNetworker();
 	Error init(const std::string &def_adr = "127.0.0.1") override;
-	
+	friend class Server;
 
 private:
 	SOCKET m_listen_socket;

@@ -110,7 +110,7 @@ bool BaseNetworker::receive(std::vector<char>& a_message)
 		if (temp_byte_received == SOCKET_ERROR || temp_byte_received == 0)
 		{
 			closesocket(m_connect_socket);
-			create_connection();
+			//create_connection();
 			return false;
 		}
 		
