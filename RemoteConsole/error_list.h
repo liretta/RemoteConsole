@@ -25,27 +25,27 @@ static void PrintError(Error er)
 	std:: cout << "Operation successful\n";
 	break;
 	case ERR_LIBRARY_INIT:
-		std::cerr << "Error initialization library\n";
+		std::wcerr << L"Error initialization library\n";
 		break;
 	case ERR_CREATE_SOCKET:
-		std::cerr << "Error creation socket\n";
+		std::wcerr << L"Error creation socket\n";
 		break;
 	case ERR_CREATE_CONNECTION:
-		std::cerr << "Error create connection\n";
+		std::wcerr << L"Error create connection\n";
 		break;
 	case ERR_CONNECT_WITH_SERVER:
-		std::cerr << "Error connect with server\n";
+		std::wcerr << L"Error connect with server\n";
 		break;
 	case ERR_SENDING:
-		std::cerr << "Error sending\n";
+		std::wcerr << L"Error sending\n";
 		break;
 	case ERR_CHECKING_LOGIN:
-		std::cerr << "Error checking login/password\n";
+		std::wcerr << L"Error checking login/password\n";
 		break;
 	case ERR_CONNECTION_LOST:
-		std::cerr << "Connection have been lost\n";
+		std::wcerr << L"Connection have been lost\n";
 		break;
 	default:
-		std::cerr << "Unknown error\n";
+		std::wcerr << L"Unknown error\n";
 	}
 }

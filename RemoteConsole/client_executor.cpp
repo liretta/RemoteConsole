@@ -46,7 +46,7 @@ std::wstring ClientExecutor::execute(const std::wstring& w_command)
     }
     else
     {
-        std::cerr << "ERROR: unable to send data to server" << std::endl;
+        std::wcerr << L"ERROR: unable to send data to server" << std::endl;
     }
 
     return execution_result;

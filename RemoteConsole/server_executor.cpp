@@ -66,8 +66,8 @@ bool ServerExecutor::execute(const std::wstring& command)
     }
     else
     {
-        std::cerr   << "ERROR: cannot execute command; "
-                    << "ServerExecutor is not initialized"
+        std::wcerr   << L"ERROR: cannot execute command; "
+                    << L"ServerExecutor is not initialized"
                     << std::endl;
     }
 
@@ -106,8 +106,8 @@ std::wstring ServerExecutor::getResult() const
     }
     else
     {
-        std::cerr   << "ERROR: no result found; "
-                    << "ServerExecutor is not initialized"
+        std::wcerr   << L"ERROR: no result found; "
+                    << L"ServerExecutor is not initialized"
                     << std::endl;
     }
 

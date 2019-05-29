@@ -49,7 +49,7 @@ bool BaseNetworker::send(const std::vector<char> &a_message)
 		temp_byte_send = ::send(m_connect_socket, (char*)&m_size+byte_send, int_size-byte_send, 0);
 		if (temp_byte_send == SOCKET_ERROR)
 		{
-			std::cerr << "Error sending data " << WSAGetLastError() << std::endl;
+			std::wcerr << L"Error sending data " << WSAGetLastError() << std::endl;
 			return false;
 		}
 		byte_send += temp_byte_send;
@@ -62,7 +62,7 @@ bool BaseNetworker::send(const std::vector<char> &a_message)
 		temp_byte_send = ::send(m_connect_socket, &a_message[0]+byte_send, m_size-byte_send, 0);
 		if (temp_byte_send == SOCKET_ERROR)
 		{
-			std::cerr << "Error sending data " << WSAGetLastError() << std::endl;
+			std::wcerr << L"Error sending data " << WSAGetLastError() << std::endl;
 			return false;
 		}
 		byte_send += temp_byte_send;
@@ -90,9 +90,9 @@ bool BaseNetworker::receive(std::vector<char>& a_message)
 		temp_byte_received = recv(m_connect_socket, (char*)&m_size+byte_received, sizeof(int)-byte_received, 0);
 		if (temp_byte_received == SOCKET_ERROR || temp_byte_received == 0)
 		{
-			std::cerr << "Error receiving data " << WSAGetLastError() << std::endl;
+			std::wcerr << L"Error receiving data " << WSAGetLastError() << std::endl;
 			closesocket(m_connect_socket);
-			create_connection();
+			//create_connection();
 			return false;
 		}
 

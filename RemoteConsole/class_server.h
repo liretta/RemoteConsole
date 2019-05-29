@@ -16,6 +16,7 @@ public:
 	ServerLogger& getLogger() override;
 	ServerNetworker& getNetworker() override;
 	void run() override;
+    bool waitingForConnection();
 
 private:
 	bool client_log_in(bool &is_connection);

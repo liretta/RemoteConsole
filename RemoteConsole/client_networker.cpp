@@ -48,7 +48,6 @@ bool ClientNetworker::create_socket(const std::string &def_adr)
 	else
 	{
 		result = false;
-		WSACleanup();
 	}
 	return result;
 }

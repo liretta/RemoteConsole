@@ -33,7 +33,7 @@ Marshaller::Type Marshaller::getMode(const std::wstring& input)
     }
     else
     {
-        std::cerr << "ERROR: wrong mode symbol " << mode_symbol << std::endl;
+        std::wcerr << L"ERROR: wrong mode symbol " << mode_symbol << std::endl;
     }
     return result;
 }

@@ -28,19 +28,12 @@ ServerNetworker& Server::getNetworker()
  */
 void Server::run()
 {
-	//init networker
-	Error er = m_networker.init();
-	PrintError(er);
-	if (er != OK)
-	{
-		return;
-	}
-
-	while(1)
+    bool is_connection = true;
+	while(is_connection)
 	{
 		//check logIn data while connection is present and log+pass wasn't connect
 		bool result_by_log_in = false;
-		bool is_connection = true;
+		
 		do 
 		{
 			result_by_log_in = client_log_in(is_connection);
@@ -100,6 +93,7 @@ bool Server::data_exchange()
 
 	std::wstring comm = 
 		Marshaller::unpackMessage(Marshaller::getMode(m_cryptor.decrypt(tmp_vc)), m_cryptor.decrypt(tmp_vc));
+    std::wcout << comm << std::endl;
 
 	m_executor.initialize();
 	result = m_executor.execute(comm);
@@ -114,4 +108,16 @@ bool Server::data_exchange()
 		m_networker.send(m_cryptor.encrypt(Marshaller::packResult(result)));
 	}
 	return true;
+}
+
+bool Server::waitingForConnection()
+{
+    //init networker
+    Error er = m_networker.init();
+    PrintError(er);
+    if (er != OK)
+    {
+        return false;
+    }
+    return true;
 }

@@ -80,7 +80,7 @@ std::wstring ServerRouter::process_execution(const std::wstring& input)
             Marshaller::packMessage(Marshaller::Type::Error,
                                     L"Server is not able to execute commands");
 
-        std::cerr << "ERROR: cannot initialize executor" << std::endl;
+        std::wcerr << L"ERROR: cannot initialize executor" << std::endl;
     }
 
     return result;
