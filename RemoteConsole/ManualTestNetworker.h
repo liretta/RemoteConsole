@@ -58,7 +58,7 @@ void TestClassServer()
 				std::cin >> pas;
 
 				ClientLogger &logger = cl.getLogger();
-				if (!logger.check_password(std::make_pair(log, pas), USER))
+				if (!logger.check_password(std::make_pair(log, pas)))
 				{
 					std::cout << "Wrong log/pass\n";
 				}

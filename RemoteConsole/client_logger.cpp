@@ -5,7 +5,7 @@
  * @return false if connection have been lost 
  * @return result of checking log/pass
  */
-bool ClientLogger::check_password(auth_data const &log_pair, Access acs)
+bool ClientLogger::check_password(auth_data const &log_pair)
 {
 	std::wstring pack_message = Marshaller::packAuthorizationData(STRINGtoWSTRING(log_pair.first), STRINGtoWSTRING(log_pair.second));
 	m_networker.send(m_cryptor.encrypt(pack_message));
