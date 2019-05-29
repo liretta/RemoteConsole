@@ -1,6 +1,6 @@
 #include "class_server.h"
 
-Server::Server():m_logger(m_networker)
+Server::Server():m_logger(m_networker), is_connection(false)
 {}
 
 ServerExecutor& Server::getExecutor()
@@ -28,22 +28,20 @@ ServerNetworker& Server::getNetworker()
  */
 void Server::run()
 {
-    bool is_connection = true;
-	while(is_connection)
+	while (is_connection)
 	{
-		//check logIn data while connection is present and log+pass wasn't connect
-		bool result_by_log_in = false;
-		
-		do 
-		{
-			result_by_log_in = client_log_in(is_connection);
-		} while (!result_by_log_in && is_connection);
-
-		while(is_connection)
-		{
-			is_connection = data_exchange();	
-		}
+		is_connection = data_exchange();
 	}
+}
+
+void Server::logIn()
+{
+	bool result_by_log_in = false;
+	//check logIn data while connection is present and log+pass wasn't connect
+	do
+	{
+		result_by_log_in = client_log_in();
+	} while (!result_by_log_in && is_connection);
 }
 
 /*!
@@ -52,7 +50,7 @@ void Server::run()
  * @return true if log+pass is correct
  * @return false in another case (wrong log/pass, cannot open file with login data or connection was lost)
  */
-bool Server::client_log_in(bool &is_connection)
+bool Server::client_log_in()
 {
 	bool result = false;
 	
@@ -117,7 +115,15 @@ bool Server::waitingForConnection()
     PrintError(er);
     if (er != OK)
     {
-        return false;
+		is_connection = false;
+        return is_connection;
     }
-    return true;
+	is_connection = true;
+	return is_connection;
+}
+
+bool Server::reconnect()
+{
+	is_connection = m_networker.create_connection();
+	return is_connection;
 }

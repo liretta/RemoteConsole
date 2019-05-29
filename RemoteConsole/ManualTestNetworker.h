@@ -29,14 +29,20 @@ void TestClassServer()
 	case 's':
 		{
 		Server sv;
-		sv.run();
+		sv.waitingForConnection();
+		while (1)
+		{
+			sv.logIn();
+			sv.run();
+			sv.reconnect();
+		}
 		}
 		break;
 	case 'c':
 		{
 		Client cl;
 			ClientNetworker &cn = cl.getNetworker();
-			Error er = cn.init();
+			Error er = cn.init("172.22.0.176");
 			if (er != OK)
 			{
 				PrintError(er);

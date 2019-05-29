@@ -17,14 +17,17 @@ public:
 	ServerNetworker& getNetworker() override;
 	void run() override;
     bool waitingForConnection();
+	bool reconnect();
+	void logIn();
 
 private:
-	bool client_log_in(bool &is_connection);
+	bool client_log_in();
 	bool data_exchange();
 
 	ServerNetworker m_networker;
 	ServerExecutor m_executor;
 	ServerCryptor m_cryptor;
 	ServerLogger m_logger;
+	bool is_connection;
 };
 
