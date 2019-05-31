@@ -66,7 +66,7 @@ bool Server::client_log_in()
 	std::pair<std::wstring, std::wstring> wlog = Marshaller::unpackAuthorizationData(m_cryptor.decrypt(tmp_vc));
 	std::pair<std::string, std::string> str_log = std::make_pair(WSTRINGtoSTRING(wlog.first), WSTRINGtoSTRING(wlog.second));
 
-	result = m_logger.check_password(str_log, USER);
+	result = m_logger.check_password(str_log);
 
 	m_networker.send(m_cryptor.encrypt( (Marshaller::packResult(result) ) ));
 

@@ -13,7 +13,7 @@ public:
 	ClientLogger(ClientNetworker &networker, ClientCryptor &cryptor) : m_networker(networker), m_cryptor(cryptor)
 	{};
 
-	bool check_password(auth_data const &log_pair, Access acs) override;
+	bool check_password(auth_data const &log_pair) override;
 	bool check_password(const std::string &log, const std::string &pass) override;
 
 private:

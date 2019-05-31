@@ -1,11 +1,21 @@
 #include "server_logger.h"
 
-/*!
- * hash-function for pair login+password
- */
-static size_t name_hash(const auth_data &name)
+///*!
+// * hash-function for pair login+password
+// */
+//static size_t name_hash(const auth_data &name)
+//{
+//	return std::hash<std::string>() (name.first) ^ std::hash<std::string>()(name.second);
+//}
+static unsigned long hash(unsigned char *str)
 {
-	return std::hash<std::string>() (name.first) ^ std::hash<std::string>()(name.second);
+	unsigned long hash = 5381;
+	int c;
+
+	while (c = *str++)
+		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+	return hash;
 }
 
 /*!
@@ -15,7 +25,7 @@ static size_t name_hash(const auth_data &name)
  * @return true if reading and writing to container was successful
  * @return false if file doesn't exist or wasn't open
  */
-bool ServerLogger::load_auth_data_from_file(std::unordered_map<auth_data, int, decltype(&name_hash)>& auth_list)
+bool ServerLogger::load_auth_data_from_file(std::unordered_map < std::string, unsigned long>& auth_list)
 {
 	std::ifstream in;
 	in.open(FILE_USERS_NAME);
@@ -31,12 +41,12 @@ bool ServerLogger::load_auth_data_from_file(std::unordered_map<auth_data, int, d
 		return false;
 	}
 
-	for (auto i = 0; i< user_quantity; ++i)
+	for (auto i = 0; i < user_quantity; ++i)
 	{
-		std::string tmp_login, tmp_pass;
-		int tmp_access;
-		in >> tmp_login >> tmp_pass >> tmp_access;
-		auth_list[auth_data(tmp_login, tmp_pass)] = tmp_access;
+		std::string tmp_login;
+		unsigned long tmp_pass;
+		in >> tmp_login >> tmp_pass;
+		auth_list[tmp_login] = tmp_pass;
 	}
 	return true;
 }
@@ -47,23 +57,22 @@ bool ServerLogger::load_auth_data_from_file(std::unordered_map<auth_data, int, d
  * @return true if there are such login, password and access in file 
  * @return false if there isn't such login, or password/access for this login isn't appropriate
  */
-bool ServerLogger::check_password(std::pair<std::string, std::string> const &log_pair, Access acs)
+bool ServerLogger::check_password(std::pair<std::string, std::string> const &log_pair)
 {
 	
-	std::unordered_map<auth_data, int, decltype(&name_hash)> user_list(0, name_hash);
+	std::unordered_map<std::string, unsigned long> user_list;
 	if (!load_auth_data_from_file(user_list))
 	{
+		std::cerr << "Cannot open file with authorization data\n";
 		return false;
 	}
 
-	const auto it = std::find_if(user_list.begin(), user_list.end(), [&log_pair, &acs] (std::pair<const auth_data, int>& elem)
+	const auto it = user_list.find(log_pair.first);
+	if (it != user_list.end())
 	{
-		return (elem.first.first == log_pair.first
-			&& elem.first.second == log_pair.second
-			&& elem.second == acs);
-	});
-
-	return (!(it == user_list.end()));
+		return (hash((unsigned char*)log_pair.second.c_str()) == user_list[log_pair.first]);
+	}
+	return false;
 }
 
 /*!
@@ -74,21 +83,5 @@ bool ServerLogger::check_password(std::pair<std::string, std::string> const &log
  */
 bool ServerLogger::check_password(const std::string &log, const std::string &pass)
 {
-	auth_data log_pair = std::make_pair(log, pass);
-	Access acs = USER;
-	std::unordered_map<auth_data, int, decltype(&name_hash)> user_list(0, name_hash);
-	if (!load_auth_data_from_file(user_list))
-	{
-		return false;
-	}
-
-	const auto it = std::find_if(user_list.begin(), user_list.end(), [&log_pair, &acs](std::pair<const auth_data, int>& elem)
-	{
-		return (elem.first.first == log_pair.first
-			&& elem.first.second == log_pair.second
-			&& elem.second == acs);
-	});
-
-	return (!(it == user_list.end()));
-
+	return(check_password(std::make_pair(log, pass)));
 }
