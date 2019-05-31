@@ -41,6 +41,8 @@ class MainServerWindow : public QMainWindow
 {
     Q_OBJECT
 
+    friend class ServerMainThread;
+
 public:
     MainServerWindow(QWidget *parent = nullptr);
     ~MainServerWindow();

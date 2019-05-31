@@ -39,30 +39,31 @@ MainServerWindow::~MainServerWindow()
 ServerMainThread::ServerMainThread(MainServerWindow& window) :
     m_window(window)
 {
-    connect(this, SIGNAL(connectionLost()),
-        &m_window, SLOT(showWaitingLabel()));
-    connect(this, SIGNAL(connectionCreated()),
-        &m_window, SLOT(hideWaitingLabel()));
+    connect(this,      SIGNAL(connectionLost()),
+            &m_window, SLOT(showWaitingLabel()));
+    connect(this,      SIGNAL(connectionCreated()),
+            &m_window, SLOT(hideWaitingLabel()));
 }
 
 void ServerMainThread::run()
 {
     emit connectionLost();
-    //m_window.m_server.getNetworker().waitForFirstConnection();
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::wcout << L"--> waiting for connection" << std::endl;
+    m_window.m_server.waitingForConnection();
 
     int i = 0;
     while (true)
     {
         emit connectionCreated();
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-        //m_window.m_server.logIn();
-        //m_window.m_server.run();
-        //m_window.m_server.getNetworker().waitForConnection();
-        
+        std::wcout << L"--> waiting for logging in" << std::endl;
+        m_window.m_server.logIn();
+
+        std::wcout << L"--> running" << std::endl;
+        m_window.m_server.run();
 
         emit connectionLost();
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::wcout << L"--> waiting for reconnection" << std::endl;
+        m_window.m_server.reconnect();
 
         ++i;
     }
@@ -122,15 +123,12 @@ void MainServerWindow::initialize_window()
 
 void MainServerWindow::showWaitingLabel()
 {
-
-    std::wcerr << "connectionLost " << std::endl;
     m_label_wait_connection->setHidden(false);
     m_label_wait_connection->repaint();
 }
 
 void MainServerWindow::hideWaitingLabel()
 {
-    std::wcout << "connectionCreated " << std::endl;
     m_label_wait_connection->setHidden(true);
     m_label_wait_connection->repaint();
 }
