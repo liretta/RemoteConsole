@@ -89,8 +89,10 @@ bool Server::data_exchange()
 		return result;
 	}
 
+	std::wstring decrypt_message = m_cryptor.decrypt(tmp_vc);
 	std::wstring comm = 
-		Marshaller::unpackMessage(Marshaller::getMode(m_cryptor.decrypt(tmp_vc)), m_cryptor.decrypt(tmp_vc));
+		Marshaller::unpackMessage(Marshaller::getMode(decrypt_message), decrypt_message);
+	//		Marshaller::unpackMessage(Marshaller::getMode(m_cryptor.decrypt(tmp_vc)), m_cryptor.decrypt(tmp_vc));
     std::wcout << comm << std::endl;
 
 	m_executor.initialize();
@@ -120,6 +122,48 @@ bool Server::waitingForConnection()
     }
 	is_connection = true;
 	return is_connection;
+}
+
+/*!
+ * generate pair: public & private keys
+ * pack private key and send it to client
+ * @return false if keys generation was failed or sending ended with error
+ */
+bool Server::sendKey()
+{
+	if (!m_cryptor.generateKey())
+	{
+		return false;
+	}
+
+	if(!m_networker.send(m_cryptor.getPublicKey()))
+	{
+		is_connection = false;
+		return false;
+	}
+	return true;
+}
+
+
+/*! 
+ * received synchronous key and initialization vector for him from client
+ * take this data to m_cryptor
+ */
+bool Server::getKey()
+{
+	std::vector<char> tmp_key, tmp_iv;
+	if(!m_networker.receive(tmp_key))
+	{
+		is_connection = false;
+		return false;
+	}
+	if(!m_networker.receive(tmp_iv))
+	{
+		is_connection = false;
+		return false;
+	}
+
+	return m_cryptor.setKey(tmp_key, tmp_iv);
 }
 
 bool Server::reconnect()

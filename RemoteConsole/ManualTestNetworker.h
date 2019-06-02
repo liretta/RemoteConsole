@@ -30,8 +30,10 @@ void TestClassServer()
 		{
 		Server sv;
 		sv.waitingForConnection();
-		while (1)
+		while (true)
 		{
+			sv.sendKey();
+			sv.getKey();
 			sv.logIn();
 			sv.run();
 			sv.reconnect();
@@ -42,7 +44,7 @@ void TestClassServer()
 		{
 		Client cl;
 			ClientNetworker &cn = cl.getNetworker();
-			Error er = cn.init("172.22.0.176");
+			Error er = cn.init("127.0.0.1");
 			if (er != OK)
 			{
 				PrintError(er);
@@ -51,6 +53,9 @@ void TestClassServer()
 			else
 			{
 				std::cout << "Connection created\n";
+				std::cout << "Waiting for key...\n";
+				cl.setCryptoKey();
+				cl.sendCryptoKey();
 				std::string log, pas;
 				std::cout << "Login: ";
 				std::cin >> log;
@@ -67,6 +72,7 @@ void TestClassServer()
 					std::cout << "Auth succeed\n";
 					while (1)
 					{
+
 						std::cin.clear();
 						std::cin.ignore();
 						std::cout << std::endl;

@@ -17,6 +17,8 @@ public:
 	ServerNetworker& getNetworker() override;
 	void run() override;
     bool waitingForConnection();
+	bool sendKey();
+	bool getKey();
 	bool reconnect();
 	void logIn();
 

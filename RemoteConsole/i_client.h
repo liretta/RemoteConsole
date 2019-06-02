@@ -18,4 +18,6 @@ public:
 	virtual ClientExecutor& getExecutor()  = 0;
 	virtual ClientLogger& getLogger()  = 0;
 	virtual ClientNetworker& getNetworker()  = 0;
+	virtual bool setCryptoKey() = 0;
+	virtual bool sendCryptoKey() = 0;
 };

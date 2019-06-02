@@ -1,4 +1,5 @@
 #include "server_networker.h"
+#include "converting_functions.hpp"
 
 ServerNetworker::~ServerNetworker()
 {
@@ -123,7 +124,12 @@ bool ServerNetworker::get_my_ip(std::string &ip_addr)
                 ip_file.close();
                 return true;
             }
-        }
+	    }
     }
+
+	if(ip_file.is_open())
+	{
+		ip_file.close();
+	}
     return false;
 }; 

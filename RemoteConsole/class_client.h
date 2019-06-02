@@ -9,8 +9,10 @@ class Client : public IClient
 {
 public:
 	ClientExecutor& getExecutor()  override;
-	ClientLogger& getLogger()  override;
+	ClientLogger& getLogger() override;
 	ClientNetworker& getNetworker()  override;
+	bool setCryptoKey() override;
+	bool sendCryptoKey() override;
 	Client();
 	~Client() = default;
 
