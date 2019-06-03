@@ -51,7 +51,17 @@ void DialogAdress::try_connect()
 
     if (error == Error::OK)
     {
-        accept();
+        bool is_sent_key    = m_client.setCryptoKey();
+        bool is_got_key     = m_client.sendCryptoKey();
+
+        if (is_sent_key && is_got_key)
+        {
+            accept();
+        }
+        else
+        {
+            QMessageBox::warning(this, "Connection", "Cannot connect to server");
+        }
     }
     else
     {

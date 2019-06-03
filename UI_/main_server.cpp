@@ -54,12 +54,18 @@ void ServerMainThread::run()
     int i = 0;
     while (true)
     {
-        emit connectionCreated();
-        std::wcout << L"--> waiting for logging in" << std::endl;
-        m_window.m_server.logIn();
+        bool is_sent_key = m_window.m_server.sendKey();
+        bool is_got_key = m_window.m_server.getKey();
 
-        std::wcout << L"--> running" << std::endl;
-        m_window.m_server.run();
+        if (is_got_key && is_sent_key)
+        {
+            emit connectionCreated();
+            std::wcout << L"--> waiting for logging in" << std::endl;
+            m_window.m_server.logIn();
+
+            std::wcout << L"--> running" << std::endl;
+            m_window.m_server.run();
+        }
 
         emit connectionLost();
         std::wcout << L"--> waiting for reconnection" << std::endl;
