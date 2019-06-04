@@ -9,9 +9,6 @@
 
 typedef std::pair<std::string, std::string> auth_data; //login+password
 
-
-//enum Access { ADMIN, USER };
-
 class iLogger
 {
 public:

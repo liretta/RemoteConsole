@@ -19,12 +19,9 @@ ServerNetworker& Server::getNetworker()
 }
 
 /*!
- * here is an endless loop with creation connection with client, checking his logIn information and data exchange within server and client
+ * here is loop with exchange data between client ad server while connection is present
  * work in order:
- * 1. initialize networker, listen for the client
- * 2. checking logIn data while it wasn't successfully 
- * 3. Running an endless loop with data exchange while connection is presents
- * if connection lost, start all loop again
+ * if connection lost, return control
  */
 void Server::run()
 {
@@ -34,10 +31,13 @@ void Server::run()
 	}
 }
 
+/*!
+* call function with checking authorization data while connection is present and while log + pass won't connect
+* if connection lost, return control
+*/
 void Server::logIn()
 {
 	bool result_by_log_in = false;
-	//check logIn data while connection is present and log+pass wasn't connect
 	do
 	{
 		result_by_log_in = client_log_in();
@@ -45,8 +45,10 @@ void Server::logIn()
 }
 
 /*!
- * receiving logIn data from client, check it and return result
- * if it is problem with receiving, change is_connection value
+ * receiving authorization data from client
+ * unpack, decrypt it and check data
+ * return packed and encrypted result of checking
+ * if was problem with receiving, change is_connection value
  * @return true if log+pass is correct
  * @return false in another case (wrong log/pass, cannot open file with login data or connection was lost)
  */
@@ -92,7 +94,6 @@ bool Server::data_exchange()
 	std::wstring decrypt_message = m_cryptor.decrypt(tmp_vc);
 	std::wstring comm = 
 		Marshaller::unpackMessage(Marshaller::getMode(decrypt_message), decrypt_message);
-	//		Marshaller::unpackMessage(Marshaller::getMode(m_cryptor.decrypt(tmp_vc)), m_cryptor.decrypt(tmp_vc));
     std::wcout << comm << std::endl;
 
 	m_executor.initialize();
@@ -110,6 +111,9 @@ bool Server::data_exchange()
 	return true;
 }
 
+/*!
+* first initialization networker and waiting for first connection client
+*/
 bool Server::waitingForConnection()
 {
     //init networker
@@ -121,6 +125,15 @@ bool Server::waitingForConnection()
         return is_connection;
     }
 	is_connection = true;
+	return is_connection;
+}
+
+/*!
+* create new connection when the first client was disconnected or connection have been lost in another reasons
+*/
+bool Server::reconnect()
+{
+	is_connection = m_networker.create_connection();
 	return is_connection;
 }
 
@@ -166,8 +179,3 @@ bool Server::getKey()
 	return m_cryptor.setKey(tmp_key, tmp_iv);
 }
 
-bool Server::reconnect()
-{
-	is_connection = m_networker.create_connection();
-	return is_connection;
-}

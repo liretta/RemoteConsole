@@ -7,17 +7,7 @@
  */
 bool ClientLogger::check_password(auth_data const &log_pair)
 {
-	std::wstring pack_message = Marshaller::packAuthorizationData(STRINGtoWSTRING(log_pair.first), STRINGtoWSTRING(log_pair.second));
-	m_networker.send(m_cryptor.encrypt(pack_message));
-	std::vector<char> vc;
-	bool result = m_networker.receive(vc);
-	if (result == false)
-	{
-		PrintError(ERR_CONNECTION_LOST);
-		return result;
-	}
-	
-	return Marshaller::unpackResult(m_cryptor.decrypt(vc));
+	return(check_password(log_pair.first, log_pair.second));
 }
 
 /*!

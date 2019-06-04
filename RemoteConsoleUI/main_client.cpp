@@ -16,9 +16,15 @@ MainClientWindow::MainClientWindow(Client& client, QWidget *parent) :
     m_label_output(new QLabel("Output", this)),
     m_label_errors(new QLabel("Errors", this)),
     m_client(client),
-    m_stream_output(std::wcout, m_text_output),
-    m_stream_errors(std::wcerr, m_text_errors)
+    m_stream_output(std::wcout, &m_wrapper_output),
+    m_stream_errors(std::wcerr, &m_wrapper_errors)
 {
+    connect(&m_wrapper_output, SIGNAL(outputRequest()),
+            this,              SLOT(displayOutput()));
+
+    connect(&m_wrapper_errors, SIGNAL(outputRequest()),
+            this,              SLOT(displayErrors()));
+
     initialize_window();
 }
 
@@ -69,4 +75,21 @@ void MainClientWindow::execute()
     std::wstring command = m_line_command->text().toStdWString();
     
     std::wcout << m_client.getExecutor().execute(command);
+}
+
+
+void MainClientWindow::displayOutput()
+{
+    while (!m_wrapper_output.m_queue.empty())
+    {
+        m_text_output->appendPlainText(m_wrapper_output.m_queue.pop());
+    }
+}
+
+void MainClientWindow::displayErrors()
+{
+    while (!m_wrapper_errors.m_queue.empty())
+    {
+        m_text_errors->appendPlainText(m_wrapper_errors.m_queue.pop());
+    }
 }

@@ -33,6 +33,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RemoteConsoleUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="dialog_adress.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -40,6 +43,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dialog_mode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_wait_connection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main_client.cpp">
@@ -50,11 +56,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="output_director.hpp">
+    <QtMoc Include="RemoteConsoleUI.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
+    </QtMoc>
     <QtMoc Include="dialog_adress.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -64,11 +68,32 @@
     <QtMoc Include="dialog_mode.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="dialog_wait_connection.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
     <QtMoc Include="main_client.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="main_server.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="output_director.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="RemoteConsoleUI.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="RemoteConsoleUI.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="threadsafe_queue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

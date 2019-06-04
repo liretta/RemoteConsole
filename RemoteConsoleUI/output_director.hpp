@@ -5,11 +5,37 @@
 #include <streambuf>
 #include <string>
 #include <QPlainTextEdit>
+#include "threadsafe_queue.h"
+
+class MainServerWindow;
+
+class TextEditWrapper : public QObject
+{
+    Q_OBJECT
+
+    friend class MainServerWindow;
+    friend class MainClientWindow;
+
+public:
+
+    void appendPlainText(const QString& text)
+    {
+        m_queue.push(text);
+        emit outputRequest();
+    }
+
+signals:
+    void outputRequest();
+
+private:
+
+    ThreadSafeQueue<QString> m_queue;
+};
 
 class WOutputStream : public std::basic_streambuf<wchar_t>
 {
 public:
-    WOutputStream(std::wostream &stream, QPlainTextEdit* text_edit)
+    WOutputStream(std::wostream &stream, TextEditWrapper* text_edit)
         : m_stream(stream)
     {
         m_log_window = text_edit;
@@ -67,7 +93,7 @@ private:
     std::wstring     m_string;
 
 
-    QPlainTextEdit* m_log_window;
+    TextEditWrapper* m_log_window;
 };
 
 #endif

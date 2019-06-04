@@ -1,11 +1,8 @@
 /*! 
  *united functionality server-side
- * all work are doing by method run() in endless cycle
  */
 #pragma once
 #include "i_server.h"
-
-
 
 class Server: public IServer
 {
@@ -15,12 +12,12 @@ public:
 	ServerExecutor& getExecutor() override;
 	ServerLogger& getLogger() override;
 	ServerNetworker& getNetworker() override;
-	void run() override;
-    bool waitingForConnection();
-	bool sendKey();
-	bool getKey();
-	bool reconnect();
-	void logIn();
+	void run() override; //running data exchange between client and server while connection is present
+    bool waitingForConnection(); //waiting in "accept" socket
+	bool sendKey(); //generate and send public key to the client
+	bool getKey(); //get synchronous key from client and initialize synchronous encryptor/decryptor
+	bool reconnect(); //waiting for new client in "accept" socket
+	void logIn(); //get log/pass, check it, return answer to client
 
 private:
 	bool client_log_in();

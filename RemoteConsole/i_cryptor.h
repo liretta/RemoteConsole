@@ -18,8 +18,7 @@ class ICryptor
 {
 public:
 	virtual bool generateKey() = 0;
-	virtual std::vector<char> encrypt (std::wstring message) = 0;
-	virtual std::wstring decrypt(std::vector<char> message) = 0;
-
+	virtual std::vector<char> encrypt (const std::wstring& message) = 0;
+	virtual std::wstring decrypt(const std::vector<char>& message) = 0;
 };
 

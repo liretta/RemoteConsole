@@ -84,6 +84,8 @@ Error ServerNetworker::init(const std::string &def_adr)
         {
             my_ip = def_adr;
         }
+		std::wcout << L"Server running on IP: " << STRINGtoWSTRING(my_ip) << std::endl;
+
 
         if (create_socket(my_ip) == false)
         {
@@ -102,8 +104,8 @@ Error ServerNetworker::init(const std::string &def_adr)
 
 /*!
  * try to get my IPv6 address
- * @return true if succede 
- * save ip address sinto the ip_addr
+ * @return true if successes 
+ * save ip address into the ip_addr
  */
 bool ServerNetworker::get_my_ip(std::string &ip_addr)
 {

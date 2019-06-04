@@ -5,7 +5,7 @@
  * convert it into string and load from this string the public key
  * @return key
  */
-CryptoPP::RSA::PublicKey ClientCryptor::repackPublicKey(std::vector<char> v_key)
+CryptoPP::RSA::PublicKey ClientCryptor::repackPublicKey(const std::vector<char>& v_key)
 {
 	CryptoPP::RSA::PublicKey tmp_key;
 	std::string str_for_key(v_key.begin(), v_key.end());
@@ -35,13 +35,15 @@ bool ClientCryptor::generateKey()
 }
 
 /*!
- * get a public key and save it to m_publicKey
+ * get a public key, validate it and save it to m_publicKey
  */
-bool ClientCryptor::setKey(std::vector<char> v_key)
+bool ClientCryptor::setKey(const std::vector<char>& v_key)
 {
-
-	//add validation?
 	m_public_key = repackPublicKey(v_key);
+	if (!m_public_key.Validate(m_rng, 3))
+	{
+		return false;
+	}
 	CryptoPP::RSAES_OAEP_SHA_Encryptor KeyEncryptor(m_public_key);
 	m_key_encryptor = KeyEncryptor;
 	return true;
@@ -55,10 +57,12 @@ bool ClientCryptor::setKey(std::vector<char> v_key)
  */
 std::vector<char> ClientCryptor::keyEncrypt()
 {
-	//std::vector<char> vc_key(m_sync_key[0], m_sync_key[CryptoPP::Blowfish::DEFAULT_KEYLENGTH]);
 	int size = CryptoPP::Blowfish::DEFAULT_KEYLENGTH;
 	std::vector<char> vc_key(size);
-	for(int i = 0; i< size; ++i)
+
+	//use bitmap copy because cryptoPP adds its bits to the key
+	//if we use std::copy we will have incorrect data in m_synchronous key in general result
+	for(int i = 0; i< size; ++i) 
 	{
 		vc_key[i] = m_sync_key[i];
 	}
@@ -72,16 +76,18 @@ std::vector<char> ClientCryptor::keyEncrypt()
 }
 
 /*!
- * convert initialize vector for synchronous encription to string
+ * convert initialize vector for synchronous encryption to string
  * encryption synchronous key via server public key
  * convert result string into vector <char>
  * @return result encryption message
  */
 std::vector<char> ClientCryptor::ivEncrypt()
 {
-	//std::vector<char> vc_iv(m_init_vector[0], m_init_vector[CryptoPP::Blowfish::BLOCKSIZE]);
 	int size = CryptoPP::Blowfish::BLOCKSIZE;
 	std::vector<char> vc_iv(size);
+
+	//use bitmap copy because cryptoPP adds its bits to the key
+	//if we use std::copy we will have incorrect data in m_synchronous key in general result
 	for(int i = 0; i< size; ++i)
 	{
 		vc_iv[i] = m_init_vector[i];
@@ -96,35 +102,20 @@ std::vector<char> ClientCryptor::ivEncrypt()
 }
 
 /*!
- * get message, encryption message via public key
- * convert result sting into vector <char>
- * will use for encryption log/pass pair (before generation synchronous connection)
- * @return result encryption message
- */
-//std::vector<char> ClientCryptor::publicEncrypt(std::wstring message)
-//{
-//	std::string tmp_message = WSTRINGtoSTRING(message);
-//	std::string result_message;
-//
-//	CryptoPP::StringSource(tmp_message, true, new CryptoPP::PK_EncryptorFilter(m_rng, m_key_encryptor, new CryptoPP::StringSink(result_message)));
-//	std::vector<char> result;
-//	std::copy(result_message.begin(), result_message.end(), std::back_inserter(result));
-//	return result;
-//}
-
-/*!
  * get wstring message to synchronous encryption
  * convert wstring message to sting, encrypted and convert encrypted string to vector <char>
  * @return encrypted message in format vector <char>
  */
-std::vector<char> ClientCryptor::encrypt(std::wstring message)
+std::vector<char> ClientCryptor::encrypt(const std::wstring& message)
 {
 	std::string result_str, message_str = (WSTRINGtoSTRING(message));
-
-	CryptoPP::StringSource(message_str, true, new CryptoPP::StreamTransformationFilter(m_encryptor, new CryptoPP::StringSink(result_str)));
-
 	std::vector<char> vc;
-	std::copy(result_str.begin(), result_str.end(), std::back_inserter(vc));
+	if (m_sync_key != nullptr)
+	{
+		CryptoPP::StringSource(message_str, true, new CryptoPP::StreamTransformationFilter(m_encryptor, new CryptoPP::StringSink(result_str)));
+		std::copy(result_str.begin(), result_str.end(), std::back_inserter(vc));
+	}
+
 	return vc;
 }
 
@@ -133,7 +124,7 @@ std::vector<char> ClientCryptor::encrypt(std::wstring message)
  * convert message to string, decryption it and convert result to wstring
  * @return decrypted message in format wstring
  */
-std::wstring ClientCryptor::decrypt(std::vector<char> message)
+std::wstring ClientCryptor::decrypt(const std::vector<char>& message)
 {
 	std::string decrypt_str, encrypt_str(message.begin(), message.end());
 

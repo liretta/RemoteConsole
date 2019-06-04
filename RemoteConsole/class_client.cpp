@@ -29,8 +29,7 @@ bool Client::setCryptoKey()
 	if (!m_networker.receive(recv_message))
 		return false;
 
-	m_cryptor.setKey(recv_message);
-	return true;
+	return m_cryptor.setKey(recv_message);
 }
 
 
@@ -52,10 +51,6 @@ bool Client::sendCryptoKey()
 		return false;
 	}
 
-	if (!m_networker.send(m_cryptor.ivEncrypt()))
-	{
-		return false;
-	}
-	return true;
+	return m_networker.send(m_cryptor.ivEncrypt());
 }
 

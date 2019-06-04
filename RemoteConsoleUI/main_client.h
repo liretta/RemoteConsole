@@ -37,6 +37,10 @@ private:
 
     Client& m_client;
 
+    TextEditWrapper
+        m_wrapper_output,
+        m_wrapper_errors;
+
     WOutputStream
         m_stream_output,
         m_stream_errors;
@@ -46,6 +50,8 @@ private:
 private slots:
 
     void execute();
+    void displayOutput();
+    void displayErrors();
 };
 
 #endif // DIALOG_CLIENT_H

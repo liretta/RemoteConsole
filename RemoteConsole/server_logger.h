@@ -4,13 +4,16 @@
 #pragma once
 #include "i_logger.h"
 #include <fstream>
+/*!
+* server side for checking authorization data
+* get pair or separate string with login and password\
+* open file with data base
+* check information and return result
+*/
 #include <unordered_map>
 #include <string>
-//#include <functional>
-//#include <algorithm>
 
-constexpr const char* FILE_USERS_NAME = "user.ini";
-//static size_t name_hash(const auth_data &name);
+constexpr const char* FILE_USERS_NAME = "../user.ini";
 static unsigned long hash(unsigned char *str);
 
 class ServerLogger:public iLogger

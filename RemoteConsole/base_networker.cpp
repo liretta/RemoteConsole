@@ -92,10 +92,8 @@ bool BaseNetworker::receive(std::vector<char>& a_message)
 		{
 			std::wcerr << L"Error receiving data " << WSAGetLastError() << std::endl;
 			closesocket(m_connect_socket);
-			//create_connection();
 			return false;
 		}
-
 		byte_received += temp_byte_received;
 	}
 	
@@ -110,10 +108,8 @@ bool BaseNetworker::receive(std::vector<char>& a_message)
 		if (temp_byte_received == SOCKET_ERROR || temp_byte_received == 0)
 		{
 			closesocket(m_connect_socket);
-			//create_connection();
 			return false;
 		}
-		
 		byte_received += temp_byte_received;
 	}
 	return true;
@@ -126,7 +122,7 @@ bool BaseNetworker::receive(std::vector<char>& a_message)
  */
 bool BaseNetworker::shutdownSend()
 {
-	return !(::shutdown(m_connect_socket, 1)); //return zero if is successful
+	return !(::shutdown(m_connect_socket, 1)); //winsock function return zero if is successful
 }
 
 /*!
@@ -135,7 +131,7 @@ bool BaseNetworker::shutdownSend()
  */
 bool BaseNetworker::shutdownReceive()
 {
-	return !(::shutdown(m_connect_socket, 0)); //return zero if is successful
+	return !(::shutdown(m_connect_socket, 0)); //winsock function return zero if is successful
 }
 
 /*!
@@ -144,5 +140,5 @@ bool BaseNetworker::shutdownReceive()
  */
 bool BaseNetworker::shutdownSendReceive()
 {
-	return !(::shutdown(m_connect_socket, 2)); //return zero if is successful
+	return !(::shutdown(m_connect_socket, 2)); //winsock function return zero if is successful
 }

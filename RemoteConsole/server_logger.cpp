@@ -1,12 +1,8 @@
 #include "server_logger.h"
 
-///*!
-// * hash-function for pair login+password
-// */
-//static size_t name_hash(const auth_data &name)
-//{
-//	return std::hash<std::string>() (name.first) ^ std::hash<std::string>()(name.second);
-//}
+/*!
+ * hash-function for password
+ */
 static unsigned long hash(unsigned char *str)
 {
 	unsigned long hash = 5381;
@@ -31,6 +27,7 @@ bool ServerLogger::load_auth_data_from_file(std::unordered_map < std::string, un
 	in.open(FILE_USERS_NAME);
 	if(!in.is_open())
 	{
+		std::wcerr << "Cannot open file with authorization data base " << GetLastError() << std::endl;
 		return false;
 	}
 
@@ -57,13 +54,11 @@ bool ServerLogger::load_auth_data_from_file(std::unordered_map < std::string, un
  * @return true if there are such login, password and access in file 
  * @return false if there isn't such login, or password/access for this login isn't appropriate
  */
-bool ServerLogger::check_password(std::pair<std::string, std::string> const &log_pair)
+bool ServerLogger::check_password(auth_data const &log_pair)
 {
-	
 	std::unordered_map<std::string, unsigned long> user_list;
 	if (!load_auth_data_from_file(user_list))
 	{
-		std::cerr << "Cannot open file with authorization data\n";
 		return false;
 	}
 

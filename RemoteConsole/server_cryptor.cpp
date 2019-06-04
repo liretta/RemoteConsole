@@ -45,7 +45,7 @@ bool ServerCryptor::generateKey()
  * decrypt it and initialize synchronous encryptor and decryptor
  * @return false 
  */
-bool ServerCryptor::setKey(std::vector<char> key, std::vector<char> iv)
+bool ServerCryptor::setKey(const std::vector<char>& key, const std::vector<char>& iv)
 {
 	if(!key_decrypt(key))
 	{
@@ -55,17 +55,7 @@ bool ServerCryptor::setKey(std::vector<char> key, std::vector<char> iv)
 	{
 		return false;
 	}
-	//for(int i = 0; i<CryptoPP::Blowfish::DEFAULT_KEYLENGTH; ++i)
-	//{
-	//	m_sync_key[i] = key[i];
-	//}
-	////std::copy(key[0], key[CryptoPP::Blowfish::DEFAULT_KEYLENGTH], m_sync_key);
-
-	//for (int i = 0; i < CryptoPP::Blowfish::BLOCKSIZE; ++i)
-	//{
-	//	m_init_vector[i] = iv[i];
-	//}
-	////std::copy(iv[0], iv[CryptoPP::Blowfish::BLOCKSIZE], m_init_vector);
+	
 	m_encryptor.SetKeyWithIV(m_sync_key, sizeof(m_sync_key), m_init_vector, sizeof(m_init_vector));
 	m_decryptor.SetKeyWithIV(m_sync_key, sizeof(m_sync_key), m_init_vector, sizeof(m_init_vector));
 	return true;
@@ -76,7 +66,7 @@ bool ServerCryptor::setKey(std::vector<char> key, std::vector<char> iv)
  * decrypt key via asynchronous encryption
  * @return true, if encryption was successful and key was saved in class member sync_key
  */
-bool ServerCryptor::key_decrypt(std::vector<char> key)
+bool ServerCryptor::key_decrypt(const std::vector<char>& key)
 {
 	std::string tmp_encrypt_key, tmp_decrypt_key;
 	tmp_encrypt_key.append(key.begin(), key.end());
@@ -98,7 +88,7 @@ bool ServerCryptor::key_decrypt(std::vector<char> key)
  * decrypt vector via asynchronous encryption
  * @return true, if encryption was successful and key was saved in class member init_vector
  */
-bool ServerCryptor::iv_decrypt(std::vector<char> iv)
+bool ServerCryptor::iv_decrypt(const std::vector<char>& iv)
 {
 	std::string tmp_encrypt_iv, tmp_decrypt_iv;
 	tmp_encrypt_iv.append(iv.begin(), iv.end());
@@ -116,7 +106,7 @@ bool ServerCryptor::iv_decrypt(std::vector<char> iv)
  * convert wstring message to sting, encrypted and convert encrypted string to vector <char>
  * @return encrypted message in format vector <char>
  */
-std::vector<char> ServerCryptor::encrypt(std::wstring message)
+std::vector<char> ServerCryptor::encrypt(const std::wstring& message)
 {
 	std::string result_str, message_str = (WSTRINGtoSTRING(message));
 
@@ -132,7 +122,7 @@ std::vector<char> ServerCryptor::encrypt(std::wstring message)
  * convert message to string, decryption it and convert result to wstring
  * @return decrypted message in format wstring
  */
-std::wstring ServerCryptor::decrypt(std::vector<char> message)
+std::wstring ServerCryptor::decrypt(const std::vector<char>& message)
 {
 	std::string decrypt_str, encrypt_str(message.begin(), message.end());
 

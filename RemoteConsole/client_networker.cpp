@@ -30,7 +30,7 @@ Error ClientNetworker::init(const std::string &def_adr)
 };
 /*!
  * create socket for connection
- * @return true if socket was create successful
+ * @return true if socket created successful
  */
 bool ClientNetworker::create_socket(const std::string &def_adr)
 {
@@ -59,6 +59,6 @@ bool ClientNetworker::create_socket(const std::string &def_adr)
 bool ClientNetworker::create_connection()
 {
 	bool result = false;
-	result = connect(m_connect_socket, (SOCKADDR*)&m_addr, sizeof(m_addr)); //return zero if successful
+	result = connect(m_connect_socket, (SOCKADDR*)&m_addr, sizeof(m_addr)); //winsock function return zero if successful
 	return !result;
 }

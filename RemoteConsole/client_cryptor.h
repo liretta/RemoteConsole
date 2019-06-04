@@ -1,7 +1,8 @@
 /*! 
- * IN PROGRESS
- * Here will be all functionality for encrypting and decrypting messages in the client side
- * now there are stubs
+ * encryption functionality in client side:
+ * - get public key and encrypt message with it
+ * - generate synchronous key and initialize vector for it, encryption and decryption message via synchronous key
+ * - pack public key for sending
  */
 #pragma once
 #include "i_cryptor.h"
@@ -16,21 +17,20 @@ private:
 	CryptoPP::CFB_Mode<CryptoPP::Blowfish>::Encryption m_encryptor;
 	CryptoPP::CFB_Mode<CryptoPP::Blowfish>::Decryption m_decryptor;
 
-	//acync part:
+	//asynchronous part:
 	CryptoPP::AutoSeededRandomPool m_rng;
 	CryptoPP::RSA::PublicKey m_public_key;
 	CryptoPP::RSAES_OAEP_SHA_Encryptor m_key_encryptor;
-	CryptoPP::RSA::PublicKey repackPublicKey(std::vector <char> v_key);
+	CryptoPP::RSA::PublicKey repackPublicKey(const std::vector <char>& v_key);
 
 public:
 	ClientCryptor() = default;
 	~ClientCryptor() = default;
-	bool generateKey() override;
-	bool setKey(std::vector<char> v_key);
-	std::vector<char> keyEncrypt();
-	std::vector<char> ivEncrypt();
-	//std::vector<char> publicEncrypt(std::wstring message);
-	std::vector<char> encrypt(std::wstring message) override;
-	std::wstring decrypt(std::vector<char> message) override;
+	bool generateKey() override; //generate synchronous key and initialize vector for him
+	bool setKey(const std::vector<char>& v_key); 
+	std::vector<char> keyEncrypt(); //encryption synchronous key via public key
+	std::vector<char> ivEncrypt(); //encryption synchronous initialize vector via public key
+	std::vector<char> encrypt(const std::wstring& message) override; //synchronous encryption
+	std::wstring decrypt(const std::vector<char>& message) override; //synchronous decryption
 };
 

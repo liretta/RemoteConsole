@@ -3,10 +3,10 @@
 #include "dialog_adress.h"
 #include "main_server.h"
 #include "main_client.h"
+#include "dialog_wait_connection.h"
 #include "../RemoteConsole/class_client.h"
 
 #include <QApplication>
-#include <QtDebug>
 
 
 bool runClientAuthorization(Client& client)
@@ -62,6 +62,7 @@ int main(int argc, char *argv[])
                 client_ptr.reset(nullptr);
             }
         }
+
         dialog_mode.close();
     }
 
@@ -77,7 +78,6 @@ int main(int argc, char *argv[])
     {
         auto* main_server = new MainServerWindow;
         main_server->show();
-        main_server->run();
         is_executable = true;
     }
 
