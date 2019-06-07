@@ -3,7 +3,6 @@
 #include "dialog_adress.h"
 #include "main_server.h"
 #include "main_client.h"
-#include "dialog_wait_connection.h"
 #include "../RemoteConsole/class_client.h"
 
 #include <QApplication>
@@ -40,6 +39,7 @@ bool runClientAuthorization(Client& client)
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+	a.setApplicationName(QString("Remote Console"));
 
     DialogMode::Mode mode   = DialogMode::Mode::None;
     int is_opened_status    = QDialog::Accepted;

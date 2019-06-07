@@ -20,9 +20,6 @@
     <QtMoc Include="dialog_mode.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="dialog_wait_connection.h" />
-  </ItemGroup>
-  <ItemGroup>
     <QtMoc Include="main_client.h" />
   </ItemGroup>
   <ItemGroup>
@@ -36,7 +33,6 @@
     <ClCompile Include="dialog_adress.cpp" />
     <ClCompile Include="dialog_client_authorization.cpp" />
     <ClCompile Include="dialog_mode.cpp" />
-    <ClCompile Include="dialog_wait_connection.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main_client.cpp" />
     <ClCompile Include="main_server.cpp" />

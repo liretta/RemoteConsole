@@ -71,13 +71,15 @@ protected:
     {
         m_string.append(p, p + n);
 
-        int pos = 0;
+        std::size_t pos = 0;
         while (pos != std::wstring::npos)
         {
             pos = m_string.find('\n');
             if (pos != std::wstring::npos)
             {
-                std::wstring tmp(m_string.begin(), m_string.begin() + pos - 1);
+                std::wstring tmp(
+					m_string.begin(),
+					(pos == 0) ? m_string.begin() + pos : m_string.begin() + pos - 1);
                 m_log_window->appendPlainText(
                     QString::fromWCharArray(tmp.c_str()));
                 m_string.erase(m_string.begin(), m_string.begin() + pos + 1);

@@ -47,25 +47,32 @@ void DialogAdress::initialize_window()
 void DialogAdress::try_connect()
 {
     std::string adress = m_line_adress->text().toStdString();
-    Error error = m_client.getNetworker().init(adress);
+	if (!adress.empty())
+	{
+		Error error = m_client.getNetworker().init(adress);
 
-    if (error == Error::OK)
-    {
-        bool is_sent_key    = m_client.setCryptoKey();
-        bool is_got_key     = m_client.sendCryptoKey();
+		if (error == Error::OK)
+		{
+			bool is_sent_key = m_client.setCryptoKey();
+			bool is_got_key = m_client.sendCryptoKey();
 
-        if (is_sent_key && is_got_key)
-        {
-            accept();
-        }
-        else
-        {
-            QMessageBox::warning(this, "Connection", "Cannot connect to server");
-        }
-    }
-    else
-    {
-        QMessageBox::warning(this, "Connection", "Cannot connect to server");
-    }
+			if (is_sent_key && is_got_key)
+			{
+				accept();
+			}
+			else
+			{
+				QMessageBox::warning(this, "Connection", "Cannot connect to server");
+			}
+		}
+		else
+		{
+			QMessageBox::warning(this, "Connection", "Cannot connect to server");
+		}
+	}
+	else
+	{
+		QMessageBox::warning(this, "Connection", "Address field is empty");
+	}
 }
 

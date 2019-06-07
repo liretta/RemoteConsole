@@ -39,9 +39,6 @@
     <QtMoc Include="dialog_mode.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="dialog_wait_connection.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="main_client.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -65,9 +62,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dialog_mode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dialog_wait_connection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
