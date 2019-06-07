@@ -39,7 +39,8 @@ bool runClientAuthorization(Client& client)
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-	a.setApplicationName(QString("Remote Console"));
+    a.setApplicationName(QString("Remote Console"));
+    a.setWindowIcon(QIcon("icon.png"));
 
     DialogMode::Mode mode   = DialogMode::Mode::None;
     int is_opened_status    = QDialog::Accepted;

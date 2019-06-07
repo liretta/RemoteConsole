@@ -78,8 +78,11 @@ protected:
             if (pos != std::wstring::npos)
             {
                 std::wstring tmp(
-					m_string.begin(),
-					(pos == 0) ? m_string.begin() + pos : m_string.begin() + pos - 1);
+                    m_string.begin(),
+                    (pos == 0) ?
+                        m_string.begin() + pos :
+                        m_string.begin() + pos - 1);
+
                 m_log_window->appendPlainText(
                     QString::fromWCharArray(tmp.c_str()));
                 m_string.erase(m_string.begin(), m_string.begin() + pos + 1);
